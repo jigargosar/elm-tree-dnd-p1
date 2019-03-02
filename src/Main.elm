@@ -183,7 +183,7 @@ viewDraggedItem draggable items =
     case maybeDraggedItem of
         Just item ->
             div (system.draggedStyles draggable)
-                [ viewItem [ classes [ bg_white, o_80 ], tabindex 0 ] item
+                [ viewItem [ classes [ bg_white, o_80 ] ] item
                 ]
 
         Nothing ->
