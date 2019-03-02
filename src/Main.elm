@@ -57,7 +57,7 @@ config =
     }
 
 
-system : DnDList.System Msg String
+system : DnDList.System Msg Item
 system =
     DnDList.create config
 
@@ -79,16 +79,10 @@ update message model =
 
         DndMsgReceived msg ->
             let
-                ( draggable, itemIds ) =
-                    system.update msg model.draggable (model.items |> List.map (\item -> item.id))
-
-                findItemWithId id =
-                    model.items |> List.filter (\item -> item.id == id)
-
-                newItems =
-                    itemIds |> List.concatMap findItemWithId
+                ( draggable, items ) =
+                    system.update msg model.draggable model.items
             in
-            ( { model | draggable = draggable, items = newItems }
+            ( { model | draggable = draggable, items = items }
             , system.commands model.draggable
             )
 
