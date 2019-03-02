@@ -3,6 +3,7 @@ port module Main exposing (main)
 import Browser
 import DnDList
 import Html exposing (Html, div)
+import Html.Attributes exposing (id)
 import Html.Events exposing (onClick)
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
@@ -41,7 +42,7 @@ init flags =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [ fromJs FromJs ]
+    Sub.batch [ fromJs FromJs, system.subscriptions model.draggable ]
 
 
 
@@ -91,12 +92,43 @@ update message model =
 
 view : Model -> Html Msg
 view model =
+    let
+        maybeDraggedIndex : Maybe Int
+        maybeDraggedIndex =
+            system.draggedIndex model.draggable
+    in
     co [ sans_serif, measure ]
         [ co [ tc ]
-            (model.items |> List.map viewItem)
+            (model.items |> List.indexedMap (viewItem maybeDraggedIndex))
         ]
 
 
-viewItem : Item -> Html Msg
-viewItem item =
-    rr [ pa3, ba, br1, mv2, b__black_50 ] [ t <| item.title ]
+viewItem : Maybe Int -> Int -> Item -> Html Msg
+viewItem maybeDraggedIndex index item =
+    case maybeDraggedIndex of
+        Nothing ->
+            let
+                itemId : String
+                itemId =
+                    "id-" ++ item.id
+            in
+            div
+                ([ id itemId
+                 , classes [ pa3, ba, br1, mv2, b__black_50 ]
+                 ]
+                    ++ system.dragEvents index itemId
+                )
+                [ t <| item.title ]
+
+        Just draggedIndex ->
+            if draggedIndex /= index then
+                div
+                    [ classes [ pa3, ba, br1, mv2, b__black_50 ]
+                    ]
+                    [ t <| item.title ]
+
+            else
+                div
+                    [ classes [ pa3, ba, br1, mv2, b__black_50 ]
+                    ]
+                    [ t <| "[---------]" ]
