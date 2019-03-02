@@ -130,27 +130,14 @@ viewDraggableItem maybeDraggedIndex index item =
     in
     case maybeDraggedIndex of
         Nothing ->
-            viewItem
-                ([ id itemId
-                 , classes [ pa3, ba, br1, mv2, b__black_50 ]
-                 ]
-                    ++ system.dragEvents index itemId
-                )
-                item
+            viewItem (id itemId :: system.dragEvents index itemId) item
 
         Just draggedIndex ->
             if draggedIndex /= index then
-                viewItem
-                    ([ classes [ pa3, ba, br1, mv2, b__black_50 ]
-                     ]
-                        ++ system.dropEvents index
-                    )
-                    item
+                viewItem (system.dropEvents index) item
 
             else
-                viewItemWithTitle
-                    []
-                    "[---------]"
+                viewItemWithTitle [] "[---------]"
 
 
 viewDraggedItem : DnDList.Draggable -> List Item -> Html.Html Msg
@@ -163,12 +150,8 @@ viewDraggedItem draggable items =
     in
     case maybeDraggedItem of
         Just item ->
-            div
-                (system.draggedStyles draggable)
-                [ div
-                    [ classes [ pa3, ba, br1, mv2, b__black_50 ]
-                    ]
-                    [ t <| item.title ]
+            div (system.draggedStyles draggable)
+                [ viewItem [] item
                 ]
 
         Nothing ->
