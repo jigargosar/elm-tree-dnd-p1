@@ -5,7 +5,7 @@ import Browser.Dom
 import DnDList
 import Html exposing (Html, div)
 import Html.Attributes exposing (id, tabindex)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onBlur, onClick, onFocus)
 import Html.Keyed
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
@@ -35,7 +35,10 @@ type alias Item =
 
 
 type alias Model =
-    { items : List Item, draggable : DnDList.Draggable }
+    { items : List Item
+    , draggable : DnDList.Draggable
+    , maybeFocusedItemId : Maybe String
+    }
 
 
 type alias Flags =
@@ -44,7 +47,12 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { items = flags.items, draggable = system.draggable }, Cmd.none )
+    ( { items = flags.items
+      , draggable = system.draggable
+      , maybeFocusedItemId = Nothing
+      }
+    , Cmd.none
+    )
 
 
 subscriptions : Model -> Sub Msg
@@ -76,6 +84,8 @@ type Msg
     = FromJs Int
     | DndMsgReceived DnDList.Msg
     | NOP
+    | ItemReceivedFocus Item
+    | ItemLostFocus Item
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -105,6 +115,23 @@ update message model =
                     |> Maybe.withDefault Cmd.none
                 ]
             )
+
+        ItemReceivedFocus item ->
+            ( { model | maybeFocusedItemId = Just item.id }, Cmd.none )
+
+        ItemLostFocus item ->
+            let
+                hadFocus =
+                    Just item.id == model.maybeFocusedItemId
+
+                newModel =
+                    if hadFocus then
+                        { model | maybeFocusedItemId = Nothing }
+
+                    else
+                        model
+            in
+            ( newModel, Cmd.none )
 
 
 
@@ -167,6 +194,8 @@ viewDraggableItem maybeDraggedIndex index item =
                 [ id itemDomId
                 , classes [ flex, items_center, pa3, ba, br1, mv2, b__black_50 ]
                 , tabindex 0
+                , onFocus <| ItemReceivedFocus item
+                , onBlur <| ItemLostFocus item
                 ]
                 [ div [ classes [ flex_grow_1 ] ] [ t item.title ]
                 , div (classes [ "move" ] :: system.dragEvents index itemDomId) [ t "|||" ]
