@@ -23,58 +23,58 @@ fromList itemList =
 
 
 toList : ItemLookup -> List Item
-toList itemTree =
-    itemTree |> Dict.values
+toList itemLookup =
+    itemLookup |> Dict.values
 
 
 getById : String -> ItemLookup -> Maybe Item
-getById id itemTree =
-    Dict.get id itemTree
+getById id itemLookup =
+    Dict.get id itemLookup
 
 
 getParentById : String -> ItemLookup -> Maybe Item
-getParentById id itemTree =
-    getById id itemTree |> Maybe.andThen (\item -> getById item.id itemTree)
+getParentById id itemLookup =
+    getById id itemLookup |> Maybe.andThen (\item -> getById item.id itemLookup)
 
 
 toArray : ItemLookup -> Array Item
-toArray itemTree =
-    toList itemTree |> Array.fromList
+toArray itemLookup =
+    toList itemLookup |> Array.fromList
 
 
-getAncestorIds : String -> ItemLookup -> Maybe (Array String)
-getAncestorIds id itemTree =
-    getById id itemTree
-        |> Maybe.map (\_ -> getAncestorIdsHelp Array.empty id itemTree)
+getAncestorIds : String -> ItemLookup -> Maybe (List String)
+getAncestorIds id itemLookup =
+    getById id itemLookup
+        |> Maybe.map (\_ -> getAncestorIdsHelp [] id itemLookup)
 
 
-getAncestorIdsHelp : Array String -> String -> ItemLookup -> Array String
-getAncestorIdsHelp ancestorIds id itemTree =
+getAncestorIdsHelp : List String -> String -> ItemLookup -> List String
+getAncestorIdsHelp ancestorIds id itemLookup =
     let
         maybeParent : Maybe Item
         maybeParent =
-            getParentById id itemTree
+            getParentById id itemLookup
 
-        newAncestorIds : Array String
+        newAncestorIds : List String
         newAncestorIds =
-            ancestorIds |> Array.push id
+            id :: ancestorIds
     in
     case maybeParent of
         Just parent ->
-            getAncestorIdsHelp newAncestorIds parent.id itemTree
+            getAncestorIdsHelp newAncestorIds parent.id itemLookup
 
         Nothing ->
             newAncestorIds
 
 
 getRootItems : ItemLookup -> List Item
-getRootItems itemTree =
-    toList itemTree |> List.filterMap (\item -> item.pid |> Maybe.map (\_ -> item))
+getRootItems itemLookup =
+    toList itemLookup |> List.filterMap (\item -> item.pid |> Maybe.map (\_ -> item))
 
 
 getChildrenById : String -> ItemLookup -> List Item
-getChildrenById id itemTree =
-    toList itemTree
+getChildrenById id itemLookup =
+    toList itemLookup
         |> List.filterMap
             (\item ->
                 item.pid

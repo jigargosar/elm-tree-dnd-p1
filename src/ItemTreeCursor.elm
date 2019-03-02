@@ -15,7 +15,15 @@ forId id itemLookup =
         itemTree =
             ItemTree.toForest itemLookup
     in
-    Just { itemLookup = itemLookup, itemForest = itemTree, path = ( [], 0 ) }
+    ItemLookup.getAncestorIds id itemLookup
+        |> Maybe.map
+            (\ancestorIds ->
+                let
+                    _ =
+                        1
+                in
+                { itemLookup = itemLookup, itemForest = itemTree, path = ( [], 0 ) }
+            )
 
 
 nest : ItemTreeCursor -> Maybe ItemTreeCursor
