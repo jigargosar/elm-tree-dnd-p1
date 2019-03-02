@@ -65,11 +65,11 @@ update msg model =
 view : Model -> Html Msg
 view model =
     co [ sans_serif, measure ]
-        [ rr [ tc ]
+        [ co [ tc ]
             (model.items |> List.map viewItem)
         ]
 
 
 viewItem : Item -> Html Msg
 viewItem item =
-    cc [] [ div [ classes [ pa3 ] ] [ t <| item.title ] ]
+    rr [] [ cc [] [ div [ classes [ pa3 ] ] [ t <| item.title ] ] ]
