@@ -1,4 +1,4 @@
-module ItemTree exposing (Item, ItemTree, fromList, getAncestorIds, getById, toArray, toList)
+module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, toArray, toList)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -11,44 +11,44 @@ type alias Item =
     }
 
 
-type alias ItemTree =
+type alias ItemLookup =
     Dict String Item
 
 
-fromList : List Item -> ItemTree
+fromList : List Item -> ItemLookup
 fromList itemList =
     itemList
         |> List.map (\item -> ( item.id, item ))
         |> Dict.fromList
 
 
-toList : ItemTree -> List Item
+toList : ItemLookup -> List Item
 toList itemTree =
     itemTree |> Dict.values
 
 
-getById : String -> ItemTree -> Maybe Item
+getById : String -> ItemLookup -> Maybe Item
 getById id itemTree =
     Dict.get id itemTree
 
 
-getParentById : String -> ItemTree -> Maybe Item
+getParentById : String -> ItemLookup -> Maybe Item
 getParentById id itemTree =
     getById id itemTree |> Maybe.andThen (\item -> getById item.id itemTree)
 
 
-toArray : ItemTree -> Array Item
+toArray : ItemLookup -> Array Item
 toArray itemTree =
     toList itemTree |> Array.fromList
 
 
-getAncestorIds : String -> ItemTree -> Maybe (Array String)
+getAncestorIds : String -> ItemLookup -> Maybe (Array String)
 getAncestorIds id itemTree =
     getById id itemTree
         |> Maybe.map (\_ -> getAncestorIdsHelp Array.empty id itemTree)
 
 
-getAncestorIdsHelp : Array String -> String -> ItemTree -> Array String
+getAncestorIdsHelp : Array String -> String -> ItemLookup -> Array String
 getAncestorIdsHelp ancestorIds id itemTree =
     let
         maybeParent : Maybe Item
@@ -75,12 +75,12 @@ type Tree
     = Tree Item Forest
 
 
-getRootItems : ItemTree -> List Item
+getRootItems : ItemLookup -> List Item
 getRootItems itemTree =
     toList itemTree |> List.filterMap (\item -> item.pid |> Maybe.map (\_ -> item))
 
 
-getChildrenById : String -> ItemTree -> List Item
+getChildrenById : String -> ItemLookup -> List Item
 getChildrenById id itemTree =
     toList itemTree
         |> List.filterMap
@@ -97,12 +97,12 @@ getChildrenById id itemTree =
             )
 
 
-toForest : ItemTree -> Forest
+toForest : ItemLookup -> Forest
 toForest itemTree =
     getRootItems itemTree |> List.map (itemToTree itemTree)
 
 
-itemToTree : ItemTree -> Item -> Tree
+itemToTree : ItemLookup -> Item -> Tree
 itemToTree itemTree item =
     Tree item (getChildrenById item.id itemTree |> List.map (itemToTree itemTree))
 
@@ -113,6 +113,19 @@ flattenForest forest =
 
 
 nest id itemTree =
+    let
+        flatTree =
+            toForest itemTree |> flattenForest
+
+        maybePrevItem : Maybe Item
+        maybePrevItem =
+            flatTree
+                |> List.indexedMap (\idx item -> ( idx, item ))
+                |> List.filter (\( _, item ) -> item.id == id)
+                |> List.head
+                |> Maybe.map (Tuple.first >> (\idx -> List.drop idx flatTree))
+                |> Maybe.andThen List.head
+    in
     toList itemTree
 
 

@@ -9,7 +9,7 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (id, tabindex)
 import Html.Events exposing (onBlur, onClick, onFocus)
 import Html.Keyed
-import ItemTree exposing (Item, ItemTree)
+import ItemLookup exposing (Item, ItemLookup)
 import ItemTreeCursor exposing (ItemTreeCursor)
 import Json.Decode exposing (Decoder)
 import Tachyons exposing (classes)
@@ -33,7 +33,7 @@ main =
 
 
 type alias Model =
-    { itemTree : ItemTree
+    { itemTree : ItemLookup
     , draggable : DnDList.Draggable
     , maybeFocusedItemId : Maybe String
     }
@@ -45,7 +45,7 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { itemTree = ItemTree.fromList flags.items
+    ( { itemTree = ItemLookup.fromList flags.items
       , draggable = system.draggable
       , maybeFocusedItemId = Nothing
       }
@@ -54,7 +54,7 @@ init flags =
 
 
 getItems model =
-    model.itemTree |> ItemTree.toList
+    model.itemTree |> ItemLookup.toList
 
 
 
@@ -131,7 +131,7 @@ update message model =
                 maybeIdx =
                     system.draggedIndex model.draggable
             in
-            ( { model | draggable = draggable, itemTree = ItemTree.fromList items }
+            ( { model | draggable = draggable, itemTree = ItemLookup.fromList items }
             , Cmd.batch
                 [ system.commands model.draggable
                 , toJsCache { items = getItems model }

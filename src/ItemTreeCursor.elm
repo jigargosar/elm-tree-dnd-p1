@@ -1,16 +1,16 @@
 module ItemTreeCursor exposing (ItemTreeCursor, forId, nest, tree, unNest)
 
 import Array exposing (Array)
-import ItemTree exposing (ItemTree)
+import ItemLookup exposing (ItemLookup)
 
 
 type alias ItemTreeCursor =
-    { itemTree : ItemTree, ancestorIds : Array String }
+    { itemTree : ItemLookup, ancestorIds : Array String }
 
 
-forId : String -> ItemTree -> Maybe ItemTreeCursor
+forId : String -> ItemLookup -> Maybe ItemTreeCursor
 forId id itemTree =
-    ItemTree.getAncestorIds id itemTree
+    ItemLookup.getAncestorIds id itemTree
         |> Maybe.map (\ancestorIds -> { itemTree = itemTree, ancestorIds = ancestorIds })
 
 
@@ -24,6 +24,6 @@ unNest cursor =
     Just cursor
 
 
-tree : ItemTreeCursor -> ItemTree
+tree : ItemTreeCursor -> ItemLookup
 tree cursor =
     cursor.itemTree
