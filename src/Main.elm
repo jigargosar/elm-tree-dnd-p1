@@ -104,7 +104,7 @@ view model =
     in
     co [ sans_serif, measure ]
         [ Html.Keyed.node "div"
-            [ classes [ tc ] ]
+            [ classes [] ]
             (List.indexedMap
                 (\idx item -> ( item.id, viewDraggableItem maybeDraggedIndex idx item ))
                 model.items
@@ -134,9 +134,9 @@ viewDraggableItem maybeDraggedIndex index item =
                 itemId =
                     "item-id-" ++ item.id
             in
-            div [ id itemId, classes [ flex, items_center ] ]
-                [ viewItem [ classes [ flex_grow_1 ] ] item
-                , div (classes [ pointer ] :: system.dragEvents index itemId) [ t "|||" ]
+            div [ id itemId, classes [ flex, items_center, pa3, ba, br1, mv2, b__black_50 ] ]
+                [ div [ classes [ flex_grow_1 ] ] [ t item.title ]
+                , div (classes [ "move" ] :: system.dragEvents index itemId) [ t "|||" ]
                 ]
 
         Just draggedIndex ->
