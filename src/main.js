@@ -1,10 +1,8 @@
 // noinspection JSUnresolvedVariable
-const r = require
-// noinspection JSUnresolvedVariable
 const m = module
 
-r('./main.scss')
-const { Elm } = r('./Main.elm')
+require('./main.scss')
+const { Elm } = require('./Main.elm')
 
 console.log(Elm)
 
@@ -13,9 +11,9 @@ const app = Elm.Main.init({
     document.querySelector('#main') || document.querySelector('body > *'),
   flags: {
     items: [
-      { id: '1', content: 'One' },
-      { id: '2', content: 'Two' },
-      { id: '3', content: 'Three' },
+      { id: '1', title: 'One' },
+      { id: '2', title: 'Two' },
+      { id: '3', title: 'Three' },
       //
     ],
   },
