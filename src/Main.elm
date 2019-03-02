@@ -166,21 +166,24 @@ update message model =
             let
                 _ =
                     Debug.log "KeyDownReceived" keyEvent
+
+                updateFocusedItemTreeCursor fn =
+                    model.maybeFocusedItemId
+                        |> Maybe.andThen (\id -> ItemTreeCursor.forId id model.itemTree)
+                        |> Maybe.andThen fn
+                        |> Maybe.map
+                            (\cursor ->
+                                ( { model | itemTree = ItemTreeCursor.tree cursor }, Cmd.none )
+                            )
+                        |> Maybe.withDefault ( model, Cmd.none )
             in
             if keyEvent.meta then
                 case keyEvent.key of
                     "ArrowLeft" ->
-                        model.maybeFocusedItemId
-                            |> Maybe.andThen (\id -> ItemTreeCursor.forId id model.itemTree)
-                            |> Maybe.andThen ItemTreeCursor.unNest
-                            |> Maybe.map
-                                (\cursor ->
-                                    ( { model | itemTree = ItemTreeCursor.tree cursor }, Cmd.none )
-                                )
-                            |> Maybe.withDefault ( model, Cmd.none )
+                        updateFocusedItemTreeCursor ItemTreeCursor.unNest
 
                     "ArrowRight" ->
-                        ( model, Cmd.none )
+                        updateFocusedItemTreeCursor ItemTreeCursor.nest
 
                     _ ->
                         ( model, Cmd.none )
