@@ -60,14 +60,16 @@ init flags =
 type alias KeyEvent =
     { key : String
     , ctrl : Bool
+    , meta : Bool
     }
 
 
 keyEventDecoder : Decoder KeyEvent
 keyEventDecoder =
-    Json.Decode.map2 KeyEvent
+    Json.Decode.map3 KeyEvent
         (Json.Decode.at [ "key" ] Json.Decode.string)
         (Json.Decode.at [ "ctrl" ] Json.Decode.bool)
+        (Json.Decode.at [ "meta" ] Json.Decode.bool)
 
 
 subscriptions : Model -> Sub Msg
@@ -158,15 +160,19 @@ update message model =
                 _ =
                     Debug.log "KeyDownReceived" keyEvent
             in
-            case keyEvent.key of
-                "ArrowLeft" ->
-                    ( model, Cmd.none )
+            if keyEvent.meta then
+                case keyEvent.key of
+                    "ArrowLeft" ->
+                        ( model, Cmd.none )
 
-                "ArrowRight" ->
-                    ( model, Cmd.none )
+                    "ArrowRight" ->
+                        ( model, Cmd.none )
 
-                _ ->
-                    ( model, Cmd.none )
+                    _ ->
+                        ( model, Cmd.none )
+
+            else
+                ( model, Cmd.none )
 
 
 
