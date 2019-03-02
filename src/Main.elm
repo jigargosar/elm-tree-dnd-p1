@@ -1,6 +1,7 @@
 port module Main exposing (main)
 
 import Browser
+import Browser.Dom
 import DnDList
 import Html exposing (Html, div)
 import Html.Attributes exposing (id, tabindex)
@@ -8,6 +9,7 @@ import Html.Events exposing (onClick)
 import Html.Keyed
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
+import Task
 import V exposing (btn, cc, co, rr, t, tInt)
 
 
@@ -73,11 +75,15 @@ system =
 type Msg
     = FromJs Int
     | DndMsgReceived DnDList.Msg
+    | NOP
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
+        NOP ->
+            ( model, Cmd.none )
+
         FromJs int ->
             ( model, Cmd.none )
 
@@ -85,9 +91,19 @@ update message model =
             let
                 ( draggable, items ) =
                     system.update msg model.draggable model.items
+
+                maybeIdx =
+                    system.draggedIndex model.draggable
             in
             ( { model | draggable = draggable, items = items }
-            , Cmd.batch [ system.commands model.draggable, toJsCache { items = model.items } ]
+            , Cmd.batch
+                [ system.commands model.draggable
+                , toJsCache { items = model.items }
+                , maybeIdx
+                    |> Maybe.andThen (\idx -> model.items |> List.drop idx |> List.head)
+                    |> Maybe.map (getItemDomId >> Browser.Dom.focus >> Task.attempt (\_ -> NOP))
+                    |> Maybe.withDefault Cmd.none
+                ]
             )
 
 
@@ -126,22 +142,26 @@ viewItemWithTitle attrs title =
         [ t <| title ]
 
 
+getItemDomId item =
+    "item-id-" ++ item.id
+
+
 viewDraggableItem : Maybe Int -> Int -> Item -> Html Msg
 viewDraggableItem maybeDraggedIndex index item =
     case maybeDraggedIndex of
         Nothing ->
             let
-                itemId : String
-                itemId =
-                    "item-id-" ++ item.id
+                itemDomId : String
+                itemDomId =
+                    getItemDomId item
             in
             div
-                [ id itemId
+                [ id itemDomId
                 , classes [ flex, items_center, pa3, ba, br1, mv2, b__black_50 ]
                 , tabindex 1
                 ]
                 [ div [ classes [ flex_grow_1 ] ] [ t item.title ]
-                , div (classes [ "move" ] :: system.dragEvents index itemId) [ t "|||" ]
+                , div (classes [ "move" ] :: system.dragEvents index itemDomId) [ t "|||" ]
                 ]
 
         Just draggedIndex ->
