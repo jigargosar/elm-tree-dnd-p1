@@ -1,6 +1,6 @@
 // noinspection JSUnresolvedVariable
-import { setCache } from './cache-helpers'
-import { always, compose, defaultTo, mergeDeepRight } from 'ramda'
+import { getCached, setCache } from './cache-helpers'
+import { compose, defaultTo, mergeDeepRight } from 'ramda'
 import './main.scss'
 import { Elm } from './Main.elm'
 
@@ -13,8 +13,8 @@ const items = [
 const elmMainCached = compose(
   mergeDeepRight({ items }),
   defaultTo({}),
-  always(null),
-  // getCached,
+  // always(null),
+  getCached,
 )('elm-main')
 const app = Elm.Main.init({
   node:
