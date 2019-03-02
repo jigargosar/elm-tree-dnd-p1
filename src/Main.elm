@@ -117,12 +117,20 @@ view model =
         maybeDraggedIndex : Maybe Int
         maybeDraggedIndex =
             system.draggedIndex model.draggable
+
+        getItemKey item =
+            case system.draggedIndex model.draggable of
+                Just _ ->
+                    "dragging-" ++ item.id
+
+                Nothing ->
+                    item.id
     in
     co [ sans_serif, measure ]
         [ Html.Keyed.node "div"
             [ classes [] ]
             (List.indexedMap
-                (\idx item -> ( item.id, viewDraggableItem maybeDraggedIndex idx item ))
+                (\idx item -> ( getItemKey item, viewDraggableItem maybeDraggedIndex idx item ))
                 model.items
             )
         , viewDraggedItem model.draggable model.items
