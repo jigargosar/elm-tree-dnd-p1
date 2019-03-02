@@ -14,6 +14,9 @@ import V exposing (btn, cc, co, rr, t, tInt)
 port fromJs : (Int -> msg) -> Sub msg
 
 
+port toJsCache : { items : List Item } -> Cmd msg
+
+
 main =
     Browser.element { init = init, update = update, view = view, subscriptions = subscriptions }
 
@@ -83,7 +86,7 @@ update message model =
                     system.update msg model.draggable model.items
             in
             ( { model | draggable = draggable, items = items }
-            , system.commands model.draggable
+            , Cmd.batch [ system.commands model.draggable, toJsCache { items = model.items } ]
             )
 
 

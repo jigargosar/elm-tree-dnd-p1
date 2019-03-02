@@ -7,6 +7,7 @@
     "start": "parcel src/index.html"
   },
   "dependencies": {
+    "ramda": "^0.26.1",
     "tachyons": "^4.11.1"
   },
   "devDependencies": {
