@@ -2,11 +2,13 @@ port module Main exposing (main)
 
 import Browser
 import Browser.Dom
+import Browser.Events exposing (onKeyDown)
 import DnDList
 import Html exposing (Html, div)
 import Html.Attributes exposing (id, tabindex)
 import Html.Events exposing (onBlur, onClick, onFocus)
 import Html.Keyed
+import Json.Decode exposing (Decoder)
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
 import Task
@@ -55,9 +57,18 @@ init flags =
     )
 
 
+keyEventDecoder : (String -> msg) -> Decoder msg
+keyEventDecoder tagger =
+    Json.Decode.at [ "key" ] (Json.Decode.map tagger Json.Decode.string)
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [ fromJs FromJs, system.subscriptions model.draggable ]
+    Sub.batch
+        [ fromJs FromJs
+        , system.subscriptions model.draggable
+        , onKeyDown <| keyEventDecoder KeyDownReceived
+        ]
 
 
 
@@ -86,6 +97,7 @@ type Msg
     | NOP
     | ItemReceivedFocus Item
     | ItemLostFocus Item
+    | KeyDownReceived String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -132,6 +144,21 @@ update message model =
                         model
             in
             ( newModel, Cmd.none )
+
+        KeyDownReceived key ->
+            let
+                _ =
+                    Debug.log "KeyDownReceived" key
+            in
+            case key of
+                "ArrowLeft" ->
+                    ( model, Cmd.none )
+
+                "ArrowRight" ->
+                    ( model, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
 
 
 
