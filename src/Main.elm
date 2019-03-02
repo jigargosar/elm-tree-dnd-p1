@@ -100,6 +100,7 @@ view model =
     co [ sans_serif, measure ]
         [ co [ tc ]
             (model.items |> List.indexedMap (viewItem maybeDraggedIndex))
+        , viewDraggedItem model.draggable model.items
         ]
 
 
@@ -132,3 +133,25 @@ viewItem maybeDraggedIndex index item =
                     [ classes [ pa3, ba, br1, mv2, b__black_50 ]
                     ]
                     [ t <| "[---------]" ]
+
+
+viewDraggedItem : DnDList.Draggable -> List Item -> Html.Html Msg
+viewDraggedItem draggable items =
+    let
+        maybeDraggedItem : Maybe Item
+        maybeDraggedItem =
+            system.draggedIndex draggable
+                |> Maybe.andThen (\index -> items |> List.drop index |> List.head)
+    in
+    case maybeDraggedItem of
+        Just item ->
+            div
+                (system.draggedStyles draggable)
+                [ div
+                    [ classes [ pa3, ba, br1, mv2, b__black_50 ]
+                    ]
+                    [ t <| item.title ]
+                ]
+
+        Nothing ->
+            Html.text ""
