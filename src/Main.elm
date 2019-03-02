@@ -72,4 +72,4 @@ view model =
 
 viewItem : Item -> Html Msg
 viewItem item =
-    rr [] [ cc [] [ div [ classes [ pa3 ] ] [ t <| item.title ] ] ]
+    rr [ pa3, ba, br1, mv2, b__black_50 ] [ t <| item.title ]
