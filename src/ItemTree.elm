@@ -1,4 +1,4 @@
-module ItemTree exposing (ItemForest, ItemTree, itemToTree, toForest)
+module ItemTree exposing (ItemForest, ItemTree, getIdxForestTupleForItemId, itemToTree, toForest)
 
 import Array exposing (Array)
 import ItemLookup exposing (Item, ItemLookup, getChildrenById, getRootItems)
@@ -20,6 +20,14 @@ toForest itemTree =
 itemToTree : ItemLookup -> Item -> ItemTree
 itemToTree itemTree item =
     Tree item (getChildrenById item.id itemTree |> List.map (itemToTree itemTree) |> Array.fromList)
+
+
+getIdxForestTupleForItemId : String -> ItemForest -> Maybe ( Int, ItemForest )
+getIdxForestTupleForItemId id forest =
+    Array.toIndexedList forest
+        |> List.filter (\( _, Tree item _ ) -> item.id == id)
+        |> List.head
+        |> Maybe.map (\( idx, Tree _ f ) -> ( idx, f ))
 
 
 

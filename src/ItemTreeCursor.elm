@@ -12,7 +12,7 @@ type alias ItemTreeCursor =
 forId : String -> ItemLookup -> Maybe ItemTreeCursor
 forId id itemLookup =
     let
-        itemTree =
+        itemForest =
             ItemTree.toForest itemLookup
     in
     ItemLookup.getAncestorIds id itemLookup
@@ -22,8 +22,26 @@ forId id itemLookup =
                     _ =
                         1
                 in
-                { itemLookup = itemLookup, itemForest = itemTree, path = ( [], 0 ) }
+                { itemLookup = itemLookup, itemForest = itemForest, path = ( [], 0 ) }
             )
+
+
+ancestorIdsToIndices : List Int -> List String -> ItemForest -> Maybe (List Int)
+ancestorIdsToIndices ancestorIndices ancestorIds itemForest =
+    case ancestorIds of
+        [] ->
+            Just ancestorIndices
+
+        id :: rest ->
+            ItemTree.getIdxForestTupleForItemId id itemForest
+                |> Maybe.andThen
+                    (\( idx, forest ) ->
+                        let
+                            newAncestorIndices =
+                                ancestorIndices ++ [ idx ]
+                        in
+                        ancestorIdsToIndices newAncestorIndices rest forest
+                    )
 
 
 nest : ItemTreeCursor -> Maybe ItemTreeCursor
