@@ -57,14 +57,6 @@ getItems model =
     model.itemTree |> ItemTree.toList
 
 
-getItemArray model =
-    model.itemTree |> ItemTree.toArray
-
-
-getItemById id model =
-    model.itemTree |> ItemTree.getById id
-
-
 
 -- SUBSCRIPTIONS
 
