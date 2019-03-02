@@ -57,9 +57,14 @@ init flags =
     )
 
 
-keyEventDecoder : (String -> msg) -> Decoder msg
-keyEventDecoder tagger =
-    Json.Decode.at [ "key" ] (Json.Decode.map tagger Json.Decode.string)
+type alias KeyEvent =
+    { key : String }
+
+
+keyEventDecoder : Decoder KeyEvent
+keyEventDecoder =
+    Json.Decode.map KeyEvent
+        (Json.Decode.at [ "key" ] Json.Decode.string)
 
 
 subscriptions : Model -> Sub Msg
@@ -67,7 +72,7 @@ subscriptions model =
     Sub.batch
         [ fromJs FromJs
         , system.subscriptions model.draggable
-        , onKeyDown <| keyEventDecoder KeyDownReceived
+        , onKeyDown <| Json.Decode.map KeyDownReceived keyEventDecoder
         ]
 
 
@@ -97,7 +102,7 @@ type Msg
     | NOP
     | ItemReceivedFocus Item
     | ItemLostFocus Item
-    | KeyDownReceived String
+    | KeyDownReceived KeyEvent
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -145,12 +150,12 @@ update message model =
             in
             ( newModel, Cmd.none )
 
-        KeyDownReceived key ->
+        KeyDownReceived keyEvent ->
             let
                 _ =
-                    Debug.log "KeyDownReceived" key
+                    Debug.log "KeyDownReceived" keyEvent
             in
-            case key of
+            case keyEvent.key of
                 "ArrowLeft" ->
                     ( model, Cmd.none )
 
