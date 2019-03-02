@@ -19,13 +19,23 @@ main =
 -- MODEL
 
 
+type alias Item =
+    { id : String
+    , title : String
+    }
+
+
 type alias Model =
-    Int
+    { items : List Item }
 
 
-init : () -> ( Model, Cmd Msg )
+type alias Flags =
+    { items : List Item }
+
+
+init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( 1212, Cmd.none )
+    ( { items = flags.items }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -38,22 +48,14 @@ subscriptions model =
 
 
 type Msg
-    = Increment
-    | Decrement
-    | FromJs Int
+    = FromJs Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Increment ->
-            ( model + 1, Cmd.none )
-
-        Decrement ->
-            ( model - 1, Cmd.none )
-
         FromJs int ->
-            ( model + int, Cmd.none )
+            ( model, Cmd.none )
 
 
 
@@ -64,8 +66,10 @@ view : Model -> Html Msg
 view model =
     co [ sans_serif, measure ]
         [ rr [ tc ]
-            [ cc [] [ btn [ onClick Decrement ] [ t "-" ] ]
-            , cc [] [ div [ classes [ pa3 ] ] [ tInt model ] ]
-            , cc [] [ btn [ onClick Increment ] [ t "+" ] ]
-            ]
+            (model.items |> List.map viewItem)
         ]
+
+
+viewItem : Item -> Html Msg
+viewItem item =
+    cc [] [ div [ classes [ pa3 ] ] [ t <| item.title ] ]
