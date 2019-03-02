@@ -8,6 +8,7 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (id, tabindex)
 import Html.Events exposing (onBlur, onClick, onFocus)
 import Html.Keyed
+import ItemTree exposing (Item, ItemTree)
 import Json.Decode exposing (Decoder)
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
@@ -29,15 +30,8 @@ main =
 -- MODEL
 
 
-type alias Item =
-    { id : String
-    , title : String
-    , pid : Maybe String
-    }
-
-
 type alias Model =
-    { items : List Item
+    { itemTree : ItemTree
     , draggable : DnDList.Draggable
     , maybeFocusedItemId : Maybe String
     }
@@ -49,12 +43,20 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { items = flags.items
+    ( { itemTree = ItemTree.fromList flags.items
       , draggable = system.draggable
       , maybeFocusedItemId = Nothing
       }
     , Cmd.none
     )
+
+
+getItems model =
+    model.itemTree |> ItemTree.toList
+
+
+
+-- SUBSCRIPTIONS
 
 
 type alias KeyEvent =
@@ -122,17 +124,17 @@ update message model =
         DndMsgReceived msg ->
             let
                 ( draggable, items ) =
-                    system.update msg model.draggable model.items
+                    system.update msg model.draggable (getItems model)
 
                 maybeIdx =
                     system.draggedIndex model.draggable
             in
-            ( { model | draggable = draggable, items = items }
+            ( { model | draggable = draggable, itemTree = ItemTree.fromList items }
             , Cmd.batch
                 [ system.commands model.draggable
-                , toJsCache { items = model.items }
+                , toJsCache { items = getItems model }
                 , maybeIdx
-                    |> Maybe.andThen (\idx -> model.items |> List.drop idx |> List.head)
+                    |> Maybe.andThen (\idx -> getItems model |> List.drop idx |> List.head)
                     |> Maybe.map (getItemDomId >> Browser.Dom.focus >> Task.attempt (\_ -> NOP))
                     |> Maybe.withDefault Cmd.none
                 ]
@@ -163,7 +165,7 @@ update message model =
                 maybeFocusedItem : Maybe Item
                 maybeFocusedItem =
                     model.maybeFocusedItemId
-                        |> Maybe.andThen (\id -> model.items |> List.filter (\item -> item.id == id) |> List.head)
+                        |> Maybe.andThen (\id -> getItems model |> List.filter (\item -> item.id == id) |> List.head)
             in
             if keyEvent.meta then
                 case keyEvent.key of
@@ -204,9 +206,9 @@ view model =
             [ classes [] ]
             (List.indexedMap
                 (\idx item -> ( getItemKey item, viewDraggableItem maybeDraggedIndex idx item ))
-                model.items
+                (getItems model)
             )
-        , viewDraggedItem model.draggable model.items
+        , viewDraggedItem model.draggable (getItems model)
         ]
 
 
