@@ -1,12 +1,11 @@
 module ItemTreeCursor exposing (ItemTreeCursor)
 
 import Array exposing (Array)
-import Dict exposing (Dict)
 import ItemTree exposing (ItemTree)
 
 
 type alias ItemTreeCursor =
-    { itemTree : ItemTree, ancestorIds : List String }
+    { itemTree : ItemTree, ancestorIds : Array String }
 
 
 forId : String -> ItemTree -> Maybe ItemTreeCursor

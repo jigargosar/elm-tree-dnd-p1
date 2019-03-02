@@ -42,22 +42,26 @@ toArray itemTree =
     toList itemTree |> Array.fromList
 
 
-getAncestorIds : String -> ItemTree -> Maybe (List String)
+getAncestorIds : String -> ItemTree -> Maybe (Array String)
 getAncestorIds id itemTree =
     getById id itemTree
-        |> Maybe.map (\_ -> getAncestorIdsHelp [] id itemTree)
+        |> Maybe.map (\_ -> getAncestorIdsHelp Array.empty id itemTree)
 
 
-getAncestorIdsHelp : List String -> String -> ItemTree -> List String
+getAncestorIdsHelp : Array String -> String -> ItemTree -> Array String
 getAncestorIdsHelp ancestorIds id itemTree =
     let
         maybeParent : Maybe Item
         maybeParent =
             getParentById id itemTree
+
+        newAncestorIds : Array String
+        newAncestorIds =
+            ancestorIds |> Array.push id
     in
     case maybeParent of
         Just parent ->
-            getAncestorIdsHelp (id :: ancestorIds) parent.id itemTree
+            getAncestorIdsHelp newAncestorIds parent.id itemTree
 
         Nothing ->
-            id :: ancestorIds
+            newAncestorIds
