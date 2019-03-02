@@ -104,7 +104,10 @@ view model =
     co [ sans_serif, measure ]
         [ Html.Keyed.node "div"
             [ classes [ tc ] ]
-            (model.items |> List.indexedMap (\idx item -> ( item.id, viewDraggableItem maybeDraggedIndex idx item )))
+            (List.indexedMap
+                (\idx item -> ( item.id, viewDraggableItem maybeDraggedIndex idx item ))
+                model.items
+            )
         , viewDraggedItem model.draggable model.items
         ]
 
