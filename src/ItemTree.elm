@@ -65,3 +65,56 @@ getAncestorIdsHelp ancestorIds id itemTree =
 
         Nothing ->
             newAncestorIds
+
+
+type alias Forest =
+    List Tree
+
+
+type Tree
+    = Tree Item Forest
+
+
+getRootItems : ItemTree -> List Item
+getRootItems itemTree =
+    toList itemTree |> List.filterMap (\item -> item.pid |> Maybe.map (\_ -> item))
+
+
+getChildrenById : String -> ItemTree -> List Item
+getChildrenById id itemTree =
+    toList itemTree
+        |> List.filterMap
+            (\item ->
+                item.pid
+                    |> Maybe.andThen
+                        (\parentId ->
+                            if id == parentId then
+                                Just item
+
+                            else
+                                Nothing
+                        )
+            )
+
+
+toForest : ItemTree -> Forest
+toForest itemTree =
+    getRootItems itemTree |> List.map (itemToTree itemTree)
+
+
+itemToTree : ItemTree -> Item -> Tree
+itemToTree itemTree item =
+    Tree item (getChildrenById item.id itemTree |> List.map (itemToTree itemTree))
+
+
+flattenForest : Forest -> List Item
+flattenForest forest =
+    forest |> List.concatMap (\(Tree item innerForest) -> item :: flattenForest innerForest)
+
+
+nest id itemTree =
+    toList itemTree
+
+
+
+--        |> Array.
