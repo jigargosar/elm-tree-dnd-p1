@@ -57,7 +57,7 @@ subscriptions model =
 config : DnDList.Config Msg
 config =
     { message = DndMsgReceived
-    , movement = DnDList.Vertical
+    , movement = DnDList.Free
     }
 
 
@@ -155,7 +155,7 @@ viewDraggedItem draggable items =
     case maybeDraggedItem of
         Just item ->
             div (system.draggedStyles draggable)
-                [ viewItem [] item
+                [ viewItem [ classes [ bg_white, o_80 ] ] item
                 ]
 
         Nothing ->
