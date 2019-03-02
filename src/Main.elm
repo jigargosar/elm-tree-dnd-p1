@@ -52,7 +52,7 @@ subscriptions model =
 config : DnDList.Config Msg
 config =
     { message = DndMsgReceived
-    , movement = DnDList.Free
+    , movement = DnDList.Vertical
     }
 
 
