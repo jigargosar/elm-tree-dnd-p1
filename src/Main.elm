@@ -126,13 +126,13 @@ viewItemWithTitle attrs title =
 
 viewDraggableItem : Maybe Int -> Int -> Item -> Html Msg
 viewDraggableItem maybeDraggedIndex index item =
-    let
-        itemId : String
-        itemId =
-            "item-id-" ++ item.id
-    in
     case maybeDraggedIndex of
         Nothing ->
+            let
+                itemId : String
+                itemId =
+                    "item-id-" ++ item.id
+            in
             viewItem (id itemId :: system.dragEvents index itemId) item
 
         Just draggedIndex ->
