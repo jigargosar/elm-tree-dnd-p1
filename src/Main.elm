@@ -5,6 +5,7 @@ import DnDList
 import Html exposing (Html, div)
 import Html.Attributes exposing (id)
 import Html.Events exposing (onClick)
+import Html.Keyed
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
 import V exposing (btn, cc, co, rr, t, tInt)
@@ -98,21 +99,22 @@ view model =
             system.draggedIndex model.draggable
     in
     co [ sans_serif, measure ]
-        [ co [ tc ]
-            (model.items |> List.indexedMap (viewItem maybeDraggedIndex))
+        [ Html.Keyed.node "div"
+            [ classes [ tc ] ]
+            (model.items |> List.indexedMap (\idx item -> ( item.id, viewItem maybeDraggedIndex idx item )))
         , viewDraggedItem model.draggable model.items
         ]
 
 
 viewItem : Maybe Int -> Int -> Item -> Html Msg
 viewItem maybeDraggedIndex index item =
+    let
+        itemId : String
+        itemId =
+            "item-id-" ++ item.id
+    in
     case maybeDraggedIndex of
         Nothing ->
-            let
-                itemId : String
-                itemId =
-                    "id-" ++ item.id
-            in
             div
                 ([ id itemId
                  , classes [ pa3, ba, br1, mv2, b__black_50 ]
