@@ -1,4 +1,4 @@
-module ItemTreeCursor exposing (ItemTreeCursor)
+module ItemTreeCursor exposing (ItemTreeCursor, forId, nest, tree)
 
 import Array exposing (Array)
 import ItemTree exposing (ItemTree)
@@ -12,3 +12,13 @@ forId : String -> ItemTree -> Maybe ItemTreeCursor
 forId id itemTree =
     ItemTree.getAncestorIds id itemTree
         |> Maybe.map (\ancestorIds -> { itemTree = itemTree, ancestorIds = ancestorIds })
+
+
+nest : ItemTreeCursor -> Maybe ItemTreeCursor
+nest cursor =
+    Just cursor
+
+
+tree : ItemTreeCursor -> ItemTree
+tree cursor =
+    cursor.itemTree

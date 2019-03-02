@@ -9,6 +9,7 @@ import Html.Attributes exposing (id, tabindex)
 import Html.Events exposing (onBlur, onClick, onFocus)
 import Html.Keyed
 import ItemTree exposing (Item, ItemTree)
+import ItemTreeCursor exposing (ItemTreeCursor)
 import Json.Decode exposing (Decoder)
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
@@ -165,34 +166,27 @@ update message model =
             let
                 _ =
                     Debug.log "KeyDownReceived" keyEvent
-
-                maybeFocusedItem : Maybe Item
-                maybeFocusedItem =
-                    model.maybeFocusedItemId
-                        |> Maybe.andThen (\id -> getItemById id model)
             in
-            case maybeFocusedItem of
-                Just focusedItem ->
-                    let
-                        items =
-                            ItemTree.toArray model.itemTree
-                    in
-                    if keyEvent.meta then
-                        case keyEvent.key of
-                            "ArrowLeft" ->
-                                ( model, Cmd.none )
+            if keyEvent.meta then
+                case keyEvent.key of
+                    "ArrowLeft" ->
+                        model.maybeFocusedItemId
+                            |> Maybe.andThen (\id -> ItemTreeCursor.forId id model.itemTree)
+                            |> Maybe.map ItemTreeCursor.nest
+                            |> Maybe.map
+                                (\cursor ->
+                                    ( { model | itemTree = ItemTreeCursor.tree cursor }, Cmd.none )
+                                )
+                            |> Maybe.withDefault ( model, Cmd.none )
 
-                            "ArrowRight" ->
-                                ( model, Cmd.none )
-
-                            _ ->
-                                ( model, Cmd.none )
-
-                    else
+                    "ArrowRight" ->
                         ( model, Cmd.none )
 
-                Nothing ->
-                    ( model, Cmd.none )
+                    _ ->
+                        ( model, Cmd.none )
+
+            else
+                ( model, Cmd.none )
 
 
 
