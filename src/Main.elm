@@ -57,7 +57,7 @@ config =
     }
 
 
-system : DnDList.System Msg Item
+system : DnDList.System Msg String
 system =
     DnDList.create config
 
@@ -79,10 +79,16 @@ update message model =
 
         DndMsgReceived msg ->
             let
-                ( draggable, items ) =
-                    system.update msg model.draggable model.items
+                ( draggable, itemIds ) =
+                    system.update msg model.draggable (model.items |> List.map (\item -> item.id))
+
+                findItemWithId id =
+                    model.items |> List.filter (\item -> item.id == id)
+
+                newItems =
+                    itemIds |> List.concatMap findItemWithId
             in
-            ( { model | draggable = draggable, items = items }
+            ( { model | draggable = draggable, items = newItems }
             , system.commands model.draggable
             )
 
@@ -126,8 +132,10 @@ viewItem maybeDraggedIndex index item =
         Just draggedIndex ->
             if draggedIndex /= index then
                 div
-                    [ classes [ pa3, ba, br1, mv2, b__black_50 ]
-                    ]
+                    ([ classes [ pa3, ba, br1, mv2, b__black_50 ]
+                     ]
+                        ++ system.dropEvents index
+                    )
                     [ t <| item.title ]
 
             else
