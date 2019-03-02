@@ -1,4 +1,4 @@
-module ItemTree exposing (Item, ItemTree, fromList, toList)
+module ItemTree exposing (Item, ItemTree, fromList, getById, toList)
 
 import Dict exposing (Dict)
 
@@ -24,3 +24,8 @@ fromList itemList =
 toList : ItemTree -> List Item
 toList itemTree =
     itemTree |> Dict.values
+
+
+getById : String -> ItemTree -> Maybe Item
+getById id itemTree =
+    Dict.get id itemTree
