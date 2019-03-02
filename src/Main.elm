@@ -104,13 +104,25 @@ view model =
     co [ sans_serif, measure ]
         [ Html.Keyed.node "div"
             [ classes [ tc ] ]
-            (model.items |> List.indexedMap (\idx item -> ( item.id, viewItem maybeDraggedIndex idx item )))
+            (model.items |> List.indexedMap (\idx item -> ( item.id, viewDragableItem maybeDraggedIndex idx item )))
         , viewDraggedItem model.draggable model.items
         ]
 
 
-viewItem : Maybe Int -> Int -> Item -> Html Msg
-viewItem maybeDraggedIndex index item =
+viewItem attrs item =
+    viewItemWithTitle attrs item.title
+
+
+viewItemWithTitle attrs title =
+    div
+        (classes [ pa3, ba, br1, mv2, b__black_50 ]
+            :: attrs
+        )
+        [ t <| title ]
+
+
+viewDragableItem : Maybe Int -> Int -> Item -> Html Msg
+viewDragableItem maybeDraggedIndex index item =
     let
         itemId : String
         itemId =
@@ -118,28 +130,27 @@ viewItem maybeDraggedIndex index item =
     in
     case maybeDraggedIndex of
         Nothing ->
-            div
+            viewItem
                 ([ id itemId
                  , classes [ pa3, ba, br1, mv2, b__black_50 ]
                  ]
                     ++ system.dragEvents index itemId
                 )
-                [ t <| item.title ]
+                item
 
         Just draggedIndex ->
             if draggedIndex /= index then
-                div
+                viewItem
                     ([ classes [ pa3, ba, br1, mv2, b__black_50 ]
                      ]
                         ++ system.dropEvents index
                     )
-                    [ t <| item.title ]
+                    item
 
             else
-                div
-                    [ classes [ pa3, ba, br1, mv2, b__black_50 ]
-                    ]
-                    [ t <| "[---------]" ]
+                viewItemWithTitle
+                    []
+                    "[---------]"
 
 
 viewDraggedItem : DnDList.Draggable -> List Item -> Html.Html Msg
