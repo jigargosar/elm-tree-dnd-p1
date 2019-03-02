@@ -120,6 +120,7 @@ viewItem attrs item =
 viewItemWithTitle attrs title =
     div
         (classes [ pa3, ba, br1, mv2, b__black_50 ]
+            :: tabindex 1
             :: attrs
         )
         [ t <| title ]
