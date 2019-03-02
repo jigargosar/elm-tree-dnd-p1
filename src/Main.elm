@@ -2,10 +2,10 @@ port module Main exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, text)
-import Html.Attributes exposing (classList)
+import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Tachyons exposing (classes)
-import Tachyons.Classes exposing (b__blue, ba, bn, br1)
+import Tachyons.Classes exposing (..)
 
 
 port fromJs : (Int -> msg) -> Sub msg
@@ -60,10 +60,14 @@ update msg model =
 -- VIEW
 
 
+btn attrs =
+    button (classes [ br1, bw1, ba, b__light_blue, ma1 ] :: attrs)
+
+
 view : Model -> Html Msg
 view model =
-    div []
-        [ button [ classes [ br1, ba, b__blue ], onClick Decrement ] [ text "-" ]
+    div [ classes [ sans_serif ] ]
+        [ btn [ onClick Decrement ] [ text "-" ]
         , div [] [ text (String.fromInt model) ]
-        , button [ onClick Increment ] [ text "+" ]
+        , btn [ onClick Increment ] [ text "+" ]
         ]
