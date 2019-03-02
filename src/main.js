@@ -1,11 +1,8 @@
 // noinspection JSUnresolvedVariable
 import { getCached, setCache } from './cache-helpers'
 import { compose, defaultTo, mergeDeepRight } from 'ramda'
-
-// noinspection JSUnresolvedFunction
-require('./main.scss')
-// noinspection JSUnresolvedFunction
-const { Elm } = require('./Main.elm')
+import './main.scss'
+import { Elm } from './Main.elm'
 
 const items = [
   { id: '1', title: 'One' },
