@@ -1,11 +1,11 @@
 port module Main exposing (main)
 
 import Browser
-import Html exposing (Html, button, div, text)
-import Html.Attributes exposing (style)
+import Html exposing (Html, div)
 import Html.Events exposing (onClick)
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
+import V exposing (btn, cc, co, rr, t, tInt)
 
 
 port fromJs : (Int -> msg) -> Sub msg
@@ -60,32 +60,12 @@ update msg model =
 -- VIEW
 
 
-btn attrs =
-    button (classes [ br1, bw1, ba, b__light_blue, ma1, pv1, ph2, mw_100, w3 ] :: attrs)
-
-
-rr classNames =
-    div [ classes <| ([ flex, flex_row ] ++ classNames) ]
-
-
-cc classNames =
-    div [ classes <| [ flex ] ++ classNames, style "flex-basis" "100%", style "flex" "1" ]
-
-
-co classNames =
-    div [ classes <| [ center ] ++ classNames ]
-
-
-intText int =
-    text <| String.fromInt int
-
-
 view : Model -> Html Msg
 view model =
     co [ sans_serif, measure ]
         [ rr [ tc ]
-            [ cc [] [ btn [ onClick Decrement ] [ text "-" ] ]
-            , cc [] [ div [ classes [ pa3 ] ] [ intText model ] ]
-            , cc [] [ btn [ onClick Increment ] [ text "+" ] ]
+            [ cc [] [ btn [ onClick Decrement ] [ t "-" ] ]
+            , cc [] [ div [ classes [ pa3 ] ] [ tInt model ] ]
+            , cc [] [ btn [ onClick Increment ] [ t "+" ] ]
             ]
         ]
