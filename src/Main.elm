@@ -64,24 +64,28 @@ btn attrs =
     button (classes [ br1, bw1, ba, b__light_blue, ma1, pv1, ph2, mw_100, w3 ] :: attrs)
 
 
-row classNames =
+rr classNames =
     div [ classes <| ([ flex, flex_row ] ++ classNames) ]
 
 
-column classNames =
+cc classNames =
     div [ classes <| [ flex ] ++ classNames, style "flex-basis" "100%", style "flex" "1" ]
 
 
-container classNames =
+co classNames =
     div [ classes <| [ center ] ++ classNames ]
+
+
+intText int =
+    text <| String.fromInt int
 
 
 view : Model -> Html Msg
 view model =
-    container [ sans_serif, measure ]
-        [ row [ tc ]
-            [ column [] [ btn [ onClick Decrement ] [ text "-" ] ]
-            , column [] [ div [ classes [ pa3 ] ] [ text (String.fromInt model) ] ]
-            , column [] [ btn [ onClick Increment ] [ text "+" ] ]
+    co [ sans_serif, measure ]
+        [ rr [ tc ]
+            [ cc [] [ btn [ onClick Decrement ] [ text "-" ] ]
+            , cc [] [ div [ classes [ pa3 ] ] [ intText model ] ]
+            , cc [] [ btn [ onClick Increment ] [ text "+" ] ]
             ]
         ]
