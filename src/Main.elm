@@ -1,5 +1,6 @@
 port module Main exposing (main)
 
+import Array exposing (Array)
 import Browser
 import Browser.Dom
 import Browser.Events exposing (onKeyDown)
@@ -54,6 +55,10 @@ init flags =
 
 getItems model =
     model.itemTree |> ItemTree.toList
+
+
+getItemArray model =
+    model.itemTree |> ItemTree.toArray
 
 
 getItemById id model =
@@ -173,7 +178,11 @@ update message model =
                         |> Maybe.andThen fn
                         |> Maybe.map
                             (\cursor ->
-                                ( { model | itemTree = ItemTreeCursor.tree cursor }, Cmd.none )
+                                ( { model | itemTree = ItemTreeCursor.tree cursor }
+                                , Cmd.batch
+                                    [ toJsCache { items = getItems model }
+                                    ]
+                                )
                             )
                         |> Maybe.withDefault ( model, Cmd.none )
             in
