@@ -172,7 +172,7 @@ update message model =
                     "ArrowLeft" ->
                         model.maybeFocusedItemId
                             |> Maybe.andThen (\id -> ItemTreeCursor.forId id model.itemTree)
-                            |> Maybe.map ItemTreeCursor.nest
+                            |> Maybe.andThen ItemTreeCursor.unNest
                             |> Maybe.map
                                 (\cursor ->
                                     ( { model | itemTree = ItemTreeCursor.tree cursor }, Cmd.none )

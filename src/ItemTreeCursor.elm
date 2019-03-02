@@ -1,4 +1,4 @@
-module ItemTreeCursor exposing (ItemTreeCursor, forId, nest, tree)
+module ItemTreeCursor exposing (ItemTreeCursor, forId, nest, tree, unNest)
 
 import Array exposing (Array)
 import ItemTree exposing (ItemTree)
@@ -16,6 +16,11 @@ forId id itemTree =
 
 nest : ItemTreeCursor -> Maybe ItemTreeCursor
 nest cursor =
+    Just cursor
+
+
+unNest : ItemTreeCursor -> Maybe ItemTreeCursor
+unNest cursor =
     Just cursor
 
 
