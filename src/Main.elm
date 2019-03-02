@@ -61,27 +61,27 @@ update msg model =
 
 
 btn attrs =
-    button (classes [ br1, bw1, ba, b__light_blue, ma1, pv1, ph2, mw3, "min-w-4" ] :: attrs)
+    button (classes [ br1, bw1, ba, b__light_blue, ma1, pv1, ph2, mw_100, w3 ] :: attrs)
 
 
-gr =
-    div [ classes [ flex, flex_row ] ]
+row classNames =
+    div [ classes <| ([ flex, flex_row ] ++ classNames) ]
 
 
-gc =
-    div [ classes [ flex ], style "flex-basis" "100%", style "flex" "1" ]
+column classNames =
+    div [ classes <| [ flex ] ++ classNames, style "flex-basis" "100%", style "flex" "1" ]
 
 
-container =
-    div [ classes [ center ] ]
+container classNames =
+    div [ classes <| [ center ] ++ classNames ]
 
 
 view : Model -> Html Msg
 view model =
-    div [ classes [ sans_serif, measure, center ] ]
-        [ div [ classes [ tc ] ]
-            [ btn [ onClick Decrement ] [ text "-" ]
-            , div [ classes [ pa3 ] ] [ text (String.fromInt model) ]
-            , btn [ onClick Increment ] [ text "+" ]
+    container [ sans_serif, measure ]
+        [ row [ tc ]
+            [ column [] [ btn [ onClick Decrement ] [ text "-" ] ]
+            , column [] [ div [ classes [ pa3 ] ] [ text (String.fromInt model) ] ]
+            , column [] [ btn [ onClick Increment ] [ text "+" ] ]
             ]
         ]
