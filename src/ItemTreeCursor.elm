@@ -59,6 +59,10 @@ ancestorIdsToIndices ancestorIndices ancestorIds itemForest =
                     )
 
 
+
+--prevSibling cursor=
+
+
 nest : ItemTreeCursor -> Maybe ItemTreeCursor
 nest cursor =
     Just cursor
