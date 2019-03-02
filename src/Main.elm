@@ -2,10 +2,13 @@ port module Main exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, text)
+import Html.Attributes exposing (classList)
 import Html.Events exposing (onClick)
+import Tachyons exposing (classes)
+import Tachyons.Classes exposing (b__blue, ba, bn, br1)
 
 
-port fromJS : (Int -> msg) -> Sub msg
+port fromJs : (Int -> msg) -> Sub msg
 
 
 main =
@@ -25,8 +28,9 @@ init flags =
     ( 1212, Cmd.none )
 
 
+subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [ fromJS FromJs ]
+    Sub.batch [ fromJs FromJs ]
 
 
 
@@ -59,7 +63,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ button [ onClick Decrement ] [ text "-" ]
+        [ button [ classes [ br1, ba, b__blue ], onClick Decrement ] [ text "-" ]
         , div [] [ text (String.fromInt model) ]
         , button [ onClick Increment ] [ text "+" ]
         ]
