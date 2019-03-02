@@ -104,7 +104,7 @@ view model =
     co [ sans_serif, measure ]
         [ Html.Keyed.node "div"
             [ classes [ tc ] ]
-            (model.items |> List.indexedMap (\idx item -> ( item.id, viewDragableItem maybeDraggedIndex idx item )))
+            (model.items |> List.indexedMap (\idx item -> ( item.id, viewDraggableItem maybeDraggedIndex idx item )))
         , viewDraggedItem model.draggable model.items
         ]
 
@@ -121,8 +121,8 @@ viewItemWithTitle attrs title =
         [ t <| title ]
 
 
-viewDragableItem : Maybe Int -> Int -> Item -> Html Msg
-viewDragableItem maybeDraggedIndex index item =
+viewDraggableItem : Maybe Int -> Int -> Item -> Html Msg
+viewDraggableItem maybeDraggedIndex index item =
     let
         itemId : String
         itemId =
