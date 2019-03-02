@@ -158,7 +158,7 @@ viewDraggableItem maybeDraggedIndex index item =
             div
                 [ id itemDomId
                 , classes [ flex, items_center, pa3, ba, br1, mv2, b__black_50 ]
-                , tabindex 1
+                , tabindex 0
                 ]
                 [ div [ classes [ flex_grow_1 ] ] [ t item.title ]
                 , div (classes [ "move" ] :: system.dragEvents index itemDomId) [ t "|||" ]
@@ -183,7 +183,7 @@ viewDraggedItem draggable items =
     case maybeDraggedItem of
         Just item ->
             div (system.draggedStyles draggable)
-                [ viewItem [ classes [ bg_white, o_80 ] ] item
+                [ viewItem [ classes [ bg_white, o_80 ], tabindex 0 ] item
                 ]
 
         Nothing ->
