@@ -1,6 +1,7 @@
 port module Main exposing (main)
 
 import Browser
+import DnDList
 import Html exposing (Html, div)
 import Html.Events exposing (onClick)
 import Tachyons exposing (classes)
@@ -26,7 +27,7 @@ type alias Item =
 
 
 type alias Model =
-    { items : List Item }
+    { items : List Item, draggable : DnDList.Draggable }
 
 
 type alias Flags =
@@ -35,7 +36,7 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { items = flags.items }, Cmd.none )
+    ( { items = flags.items, draggable = system.draggable }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -44,18 +45,44 @@ subscriptions model =
 
 
 
+-- SYSTEM
+
+
+config : DnDList.Config Msg
+config =
+    { message = DndMsgReceived
+    , movement = DnDList.Free
+    }
+
+
+system : DnDList.System Msg Item
+system =
+    DnDList.create config
+
+
+
 -- UPDATE
 
 
 type Msg
     = FromJs Int
+    | DndMsgReceived DnDList.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
+update message model =
+    case message of
         FromJs int ->
             ( model, Cmd.none )
+
+        DndMsgReceived msg ->
+            let
+                ( draggable, items ) =
+                    system.update msg model.draggable model.items
+            in
+            ( { model | draggable = draggable, items = items }
+            , system.commands model.draggable
+            )
 
 
 
