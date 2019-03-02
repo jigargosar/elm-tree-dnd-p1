@@ -1,4 +1,4 @@
-require("tachyons")
+require("./main.scss")
 const {Elm} = require('./Main.elm')
 
 console.log(Elm)

@@ -2,7 +2,7 @@ port module Main exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, text)
-import Html.Attributes exposing (class, classList)
+import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
@@ -61,13 +61,27 @@ update msg model =
 
 
 btn attrs =
-    button (classes [ br1, bw1, ba, b__light_blue, ma1 ] :: attrs)
+    button (classes [ br1, bw1, ba, b__light_blue, ma1, pv1, ph2, mw3, "min-w-4" ] :: attrs)
+
+
+gr =
+    div [ classes [ flex, flex_row ] ]
+
+
+gc =
+    div [ classes [ flex ], style "flex-basis" "100%", style "flex" "1" ]
+
+
+container =
+    div [ classes [ center ] ]
 
 
 view : Model -> Html Msg
 view model =
-    div [ classes [ sans_serif ] ]
-        [ btn [ onClick Decrement ] [ text "-" ]
-        , div [] [ text (String.fromInt model) ]
-        , btn [ onClick Increment ] [ text "+" ]
+    div [ classes [ sans_serif, measure, center ] ]
+        [ div [ classes [ tc ] ]
+            [ btn [ onClick Decrement ] [ text "-" ]
+            , div [ classes [ pa3 ] ] [ text (String.fromInt model) ]
+            , btn [ onClick Increment ] [ text "+" ]
+            ]
         ]
