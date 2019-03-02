@@ -169,21 +169,30 @@ update message model =
                 maybeFocusedItem : Maybe Item
                 maybeFocusedItem =
                     model.maybeFocusedItemId
-                        |> Maybe.andThen (\id -> getItems model |> List.filter (\item -> item.id == id) |> List.head)
+                        |> Maybe.andThen (\id -> getItemById id model)
             in
-            if keyEvent.meta then
-                case keyEvent.key of
-                    "ArrowLeft" ->
+            case maybeFocusedItem of
+                Just focusedItem ->
+                    let
+                        items =
+                            ItemTree.toArray model.itemTree
+                    in
+                    if keyEvent.meta then
+                        case keyEvent.key of
+                            "ArrowLeft" ->
+                                ( model, Cmd.none )
+
+                            "ArrowRight" ->
+                                ( model, Cmd.none )
+
+                            _ ->
+                                ( model, Cmd.none )
+
+                    else
                         ( model, Cmd.none )
 
-                    "ArrowRight" ->
-                        ( model, Cmd.none )
-
-                    _ ->
-                        ( model, Cmd.none )
-
-            else
-                ( model, Cmd.none )
+                Nothing ->
+                    ( model, Cmd.none )
 
 
 

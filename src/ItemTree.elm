@@ -1,5 +1,6 @@
-module ItemTree exposing (Item, ItemTree, fromList, getById, toList)
+module ItemTree exposing (Item, ItemTree, fromList, getById, toArray, toList)
 
+import Array exposing (Array)
 import Dict exposing (Dict)
 
 
@@ -29,3 +30,8 @@ toList itemTree =
 getById : String -> ItemTree -> Maybe Item
 getById id itemTree =
     Dict.get id itemTree
+
+
+toArray : ItemTree -> Array Item
+toArray itemTree =
+    toList itemTree |> Array.fromList
