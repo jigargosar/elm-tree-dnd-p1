@@ -58,13 +58,16 @@ init flags =
 
 
 type alias KeyEvent =
-    { key : String }
+    { key : String
+    , ctrl : Bool
+    }
 
 
 keyEventDecoder : Decoder KeyEvent
 keyEventDecoder =
-    Json.Decode.map KeyEvent
+    Json.Decode.map2 KeyEvent
         (Json.Decode.at [ "key" ] Json.Decode.string)
+        (Json.Decode.at [ "ctrl" ] Json.Decode.bool)
 
 
 subscriptions : Model -> Sub Msg
