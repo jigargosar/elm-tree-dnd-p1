@@ -159,6 +159,11 @@ update message model =
             let
                 _ =
                     Debug.log "KeyDownReceived" keyEvent
+
+                maybeFocusedItem : Maybe Item
+                maybeFocusedItem =
+                    model.maybeFocusedItemId
+                        |> Maybe.andThen (\id -> model.items |> List.filter (\item -> item.id == id) |> List.head)
             in
             if keyEvent.meta then
                 case keyEvent.key of
