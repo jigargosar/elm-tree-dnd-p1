@@ -170,7 +170,7 @@ update message model =
                         |> Maybe.andThen fn
                         |> Maybe.map
                             (\cursor ->
-                                ( { model | itemTree = ItemTreeCursor.tree cursor }
+                                ( { model | itemTree = ItemTreeCursor.getItemLookup cursor }
                                 , Cmd.batch
                                     [ toJsCache { items = getItems model }
                                     ]
