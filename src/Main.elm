@@ -3,7 +3,7 @@ port module Main exposing (main)
 import Browser
 import DnDList
 import Html exposing (Html, div)
-import Html.Attributes exposing (id)
+import Html.Attributes exposing (id, tabindex)
 import Html.Events exposing (onClick)
 import Html.Keyed
 import Tachyons exposing (classes)
@@ -134,7 +134,10 @@ viewDraggableItem maybeDraggedIndex index item =
                 itemId =
                     "item-id-" ++ item.id
             in
-            viewItem (id itemId :: system.dragEvents index itemId) item
+            div [ id itemId, classes [ flex, items_center ] ]
+                [ viewItem [ classes [ flex_grow_1 ] ] item
+                , div (classes [ pointer ] :: system.dragEvents index itemId) [ t "|||" ]
+                ]
 
         Just draggedIndex ->
             if draggedIndex /= index then
