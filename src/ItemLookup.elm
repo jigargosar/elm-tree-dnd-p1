@@ -73,15 +73,15 @@ getRootItems itemLookup =
     toList itemLookup |> List.filterMap (\item -> item.pid |> Maybe.map (\_ -> item))
 
 
-getChildrenOfId : String -> ItemLookup -> List Item
+getChildrenOfId : String -> ItemLookup -> Maybe (List Item)
 getChildrenOfId parentId itemLookup =
-    toList itemLookup |> List.filter (\parent -> parentId == parent.id)
+    getById parentId itemLookup |> Maybe.map (\parent -> List.filterMap (\cid -> getById cid itemLookup) parent.childIds)
 
 
 getSiblingsOfId : String -> ItemLookup -> Maybe (List Item)
 getSiblingsOfId id itemLookup =
     getParentById id itemLookup
-        |> Maybe.map (\parent -> getChildrenOfId parent.id itemLookup)
+        |> Maybe.andThen (\parent -> getChildrenOfId parent.id itemLookup)
 
 
 getPrevSibling : String -> ItemLookup -> Maybe (List Item)
