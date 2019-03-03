@@ -13,5 +13,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="@types/pouchdb-browser" level="application" />
+    <orderEntry type="library" name="@types/ramda" level="application" />
   </component>
 </module>

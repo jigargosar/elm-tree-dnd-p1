@@ -24,6 +24,9 @@ port fromJs : (Int -> msg) -> Sub msg
 port toJsCache : { items : List Item } -> Cmd msg
 
 
+port bulkItemDocs : List Item -> Cmd msg
+
+
 main =
     Browser.element { init = init, update = update, view = view, subscriptions = subscriptions }
 
@@ -130,6 +133,9 @@ update message model =
 
                 maybeIdx =
                     system.draggedIndex model.draggable
+
+                _ =
+                    bulkItemDocs
             in
             ( { model | draggable = draggable, itemTree = ItemLookup.fromList items }
             , Cmd.batch
@@ -139,6 +145,7 @@ update message model =
                     |> Maybe.andThen (\idx -> getItems model |> List.drop idx |> List.head)
                     |> Maybe.map (getItemDomId >> Browser.Dom.focus >> Task.attempt (\_ -> NOP))
                     |> Maybe.withDefault Cmd.none
+                , bulkItemDocs []
                 ]
             )
 

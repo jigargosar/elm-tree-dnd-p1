@@ -3,6 +3,7 @@ import { getCached, setCache } from './cache-helpers'
 import { compose, defaultTo, mergeDeepRight } from 'ramda'
 import './main.scss'
 import { Elm } from './Main.elm'
+import PouchDb from 'pouchdb-browser'
 
 const items = [
   { id: '1', title: 'One', pid: null, childIds: [] },
@@ -24,4 +25,17 @@ const app = Elm.Main.init({
 
 app.ports.toJsCache.subscribe(model => {
   setCache('elm-main', model)
+})
+
+const db = new PouchDb('items')
+
+// db.allDocs({include_docs:true})
+
+app.ports.bulkItemDocs.subscribe(items => {
+  const docs = items.map(item => ({
+    _id: item.id,
+    _rev: item.rev,
+    ...item,
+  }))
+  db.bulkDocs(docs).catch(console.error)
 })
