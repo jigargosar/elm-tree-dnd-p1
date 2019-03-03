@@ -181,11 +181,15 @@ update message model =
             ( model, Cmd.batch [ newItemDoc () ] )
 
         PouchItemsLoaded items ->
-            ( { model
-                | itemLookup = ItemLookup.fromList items
-                , maybeDndItems = Nothing
-              }
-            , Cmd.batch [ toJsCache { items = getItems model } ]
+            let
+                newModel =
+                    { model
+                        | itemLookup = ItemLookup.fromList items
+                        , maybeDndItems = Nothing
+                    }
+            in
+            ( newModel
+            , Cmd.batch [ toJsCache { items = getItems newModel } ]
             )
 
         FocusItemResultReceived item result ->
