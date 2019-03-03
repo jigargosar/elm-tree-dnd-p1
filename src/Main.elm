@@ -1,12 +1,11 @@
 port module Main exposing (main)
 
-import Array.Extra
 import Browser
 import Browser.Dom
 import Browser.Events exposing (onKeyDown)
 import DnDList
 import Html exposing (Html, button, div)
-import Html.Attributes exposing (attribute, property, tabindex)
+import Html.Attributes exposing (attribute, tabindex)
 import Html.Events exposing (onBlur, onClick, onFocus)
 import ItemLookup exposing (Item, ItemLookup)
 import Json.Decode exposing (Decoder)
@@ -15,7 +14,7 @@ import Maybe.Extra
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
 import Task
-import V exposing (btn, cc, co, noHtml, rr, t, tInt)
+import V exposing (co, noHtml, t)
 import ViewDndItemTree
 
 
@@ -462,8 +461,6 @@ viewTree model =
                 , onFocus <| ItemFocused item
                 , onBlur <| ItemLostFocus item
                 , attribute "data-is-focusable" "true"
-
-                --                , property "data-is-focusable" "true"
                 ]
                 [ t item.title ]
 
