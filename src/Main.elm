@@ -78,6 +78,15 @@ getRootItems model =
     model.itemLookup |> ItemLookup.getRootItems
 
 
+getDisplayRootItems model =
+    case model.maybeDndItems of
+        Just items ->
+            items
+
+        Nothing ->
+            getRootItems model
+
+
 
 -- SUBSCRIPTIONS
 
@@ -233,16 +242,8 @@ update message model =
 
         DndMsgReceived msg ->
             let
-                prevRootItems =
-                    case model.maybeDndItems of
-                        Just items ->
-                            items
-
-                        Nothing ->
-                            getRootItems model
-
                 ( draggable, rootItems ) =
-                    system.update msg model.draggable prevRootItems
+                    system.update msg model.draggable (getDisplayRootItems model)
 
                 maybeIdx =
                     system.draggedIndex model.draggable
@@ -252,7 +253,7 @@ update message model =
             , Cmd.batch
                 [ system.commands model.draggable
                 , maybeIdx
-                    |> Maybe.andThen (\idx -> getRootItems model |> List.drop idx |> List.head)
+                    |> Maybe.andThen (\idx -> rootItems |> List.drop idx |> List.head)
                     |> focusMaybeItemCmd
                 ]
             )
@@ -326,15 +327,18 @@ view model =
 
                 Nothing ->
                     item.id
+
+        displayRootItems =
+            getDisplayRootItems model
     in
     co [ sans_serif, measure ]
         [ Html.Keyed.node "div"
             [ classes [] ]
             (List.indexedMap
                 (\idx item -> ( getItemKey item, viewDraggableItem maybeDraggedIndex idx item ))
-                (getRootItems model)
+                displayRootItems
             )
-        , viewDraggedItem model.draggable (getRootItems model)
+        , viewDraggedItem model.draggable displayRootItems
         ]
 
 
