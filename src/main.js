@@ -1,8 +1,8 @@
 // noinspection JSUnresolvedVariable
 import { getCached, setCache } from './cache-helpers'
+import * as R from 'ramda'
 import {
   compose,
-  default as R,
   defaultTo,
   insert,
   isEmpty,
@@ -47,13 +47,13 @@ window.addEventListener('keydown', function(event) {
     )
     const idx = focusable.indexOf(event.target)
 
-    console.log(idx, focusable)
+    // console.debug(idx, focusable)
     if (event.key === 'ArrowUp') {
-      R.at(idx - 1)(focusable).focus()
+      R.nth(idx - 1)(focusable).focus()
     } else if (event.key === 'ArrowDown') {
       R.compose(
         R.defaultTo(focusable[0]),
-        R.at(idx + 1),
+        R.nth(idx + 1),
       )(focusable).focus()
     }
   }
