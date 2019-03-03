@@ -5,9 +5,8 @@ import Browser.Dom
 import Browser.Events exposing (onKeyDown)
 import DnDList
 import Html exposing (Html, button, div)
-import Html.Attributes exposing (id, tabindex)
+import Html.Attributes exposing (tabindex)
 import Html.Events exposing (onBlur, onClick, onFocus)
-import Html.Keyed
 import ItemLookup exposing (Item, ItemLookup)
 import Json.Decode exposing (Decoder)
 import Maybe.Extra
