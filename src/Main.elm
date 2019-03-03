@@ -394,7 +394,29 @@ view model =
         [ div []
             [ button [ onClick AddItemClicked ] [ t "add new" ]
             ]
-        , Html.Keyed.node "div"
+        , viewDndItemTree system model
+        ]
+
+
+viewDndItemTree system_ model =
+    let
+        maybeDraggedIndex : Maybe Int
+        maybeDraggedIndex =
+            system_.draggedIndex model.draggable
+
+        getItemKey item =
+            case system_.draggedIndex model.draggable of
+                Just _ ->
+                    "dragging-" ++ item.id
+
+                Nothing ->
+                    item.id
+
+        displayRootItems =
+            getDisplayRootItems model
+    in
+    div []
+        [ Html.Keyed.node "div"
             [ classes [] ]
             (List.indexedMap
                 (\idx item -> ( getItemKey item, viewDraggableItem maybeDraggedIndex idx item ))
