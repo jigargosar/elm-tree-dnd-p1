@@ -338,6 +338,12 @@ update message model =
                         ( model, Cmd.none )
 
                     "ArrowRight" ->
+                        let
+                            _ =
+                                model.maybeFocusedItemId
+                                    |> Maybe.andThen (\id -> ItemLookup.getPrevSibling id model.itemLookup)
+                                    |> Debug.log "getPrevSibling"
+                        in
                         ( model, Cmd.none )
 
                     _ ->

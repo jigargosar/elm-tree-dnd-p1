@@ -1,4 +1,4 @@
-module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getRootItems, insertAll, toArray, toList)
+module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getPrevSibling, getRootItems, insertAll, toArray, toList)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -108,10 +108,7 @@ getPrevSibling id itemLookup =
                     maybePrevSibling : Maybe Item
                     maybePrevSibling =
                         parent.childIds
-                            |> List.reverse
-                            |> List.Extra.dropWhile (\cid -> cid /= id)
-                            |> List.Extra.dropWhile (\cid -> cid == id)
-                            |> List.head
+                            |> List.Extra.find ((==) id)
                             |> Maybe.andThen (\cid -> getById cid itemLookup)
                 in
                 maybePrevSibling
