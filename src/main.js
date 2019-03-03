@@ -15,6 +15,7 @@ import PouchDb from 'pouchdb-browser'
 import validate from 'aproba'
 import nanoid from 'nanoid'
 import faker from 'faker'
+import isHotKey from 'is-hotkey'
 
 /* ITEM */
 const rootItemId = 'i_root_item_id'
@@ -55,9 +56,9 @@ window.addEventListener('keydown', function(event) {
   console.log('isFocusable', isFocusable)
   if (isFocusable) {
     // console.debug(idx, focusable)
-    if (event.key === 'ArrowUp') {
+    if (isHotKey('up')(event)) {
       focusOffset(event, -1)
-    } else if (event.key === 'ArrowDown') {
+    } else if (isHotKey('down')(event)) {
       focusOffset(event, 1)
     }
   }

@@ -161,11 +161,9 @@ getParentAndPrevPrevSibOf id itemLookup =
 getParentAndGrandParentOf : String -> ItemLookup -> Maybe ( String, Item, Item )
 getParentAndGrandParentOf id itemLookup =
     getParentOfId id itemLookup
-        |> Debug.log "getParentOfId"
         |> Maybe.andThen
             (\parent ->
                 getParentOfId parent.id itemLookup
-                    |> Debug.log "getParentOfId"
                     |> Maybe.map (\grandParent -> ( id, parent, grandParent ))
             )
 

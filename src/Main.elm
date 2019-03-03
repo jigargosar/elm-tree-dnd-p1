@@ -414,7 +414,6 @@ onUnnestFocused model =
             (\id ->
                 ItemLookup.getParentAndGrandParentOf id model.itemLookup
             )
-        |> Debug.log "getParentAndGrandParentOf"
         |> Maybe.map
             (\( id, parent, grandParent ) ->
                 updateParents id parent grandParent
