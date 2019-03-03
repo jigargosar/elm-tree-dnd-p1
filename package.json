@@ -7,13 +7,14 @@
     "start": "parcel src/index.html"
   },
   "dependencies": {
+    "aproba": "latest",
     "faker": "^4.1.0",
+    "hotkeys-js": "^3.4.4",
     "lodash.debounce": "^4.0.8",
     "nanoid": "^2.0.1",
     "pouchdb-browser": "^7.0.0",
     "ramda": "^0.26.1",
-    "tachyons": "^4.11.1",
-    "aproba": "latest"
+    "tachyons": "^4.11.1"
   },
   "devDependencies": {
     "elm-hot": "^1.0.1",
