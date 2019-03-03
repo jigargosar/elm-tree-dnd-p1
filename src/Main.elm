@@ -386,28 +386,28 @@ view model =
 
 viewTree model =
     let
+        mRoot : Maybe Item
         mRoot =
             getRootItem model
 
-        getChildren : Item -> List Item
-        getChildren item =
-            ItemLookup.getChildrenOfId item.id model.itemLookup
+        getChildrenOfId : String -> List Item
+        getChildrenOfId id =
+            ItemLookup.getChildrenOfId id model.itemLookup
                 |> Maybe.withDefault []
 
-        --        getChildrenOfId : String -> List Item
-        --        getChildrenOfId id =
-        --            ItemLookup.getChildrenOfId id model.itemLookup
-        --                |> Maybe.withDefault []
+        getChildren : Item -> List Item
+        getChildren item =
+            getChildrenOfId item.id
+
+        viewItemTitle : Item -> Html Msg
         viewItemTitle item =
-            div [ classes [ pa3, ba, b__black_50, br1 ] ] [ t item.title ]
+            div [ classes [ mv2, pa3, ba, b__black_50, br1 ] ] [ t item.title ]
 
-        viewId : String -> Html Msg
-        viewId iid =
-            div [ classes [ mv2, pa3, ba, b__black_50, br1 ] ] [ t iid ]
-
+        viewChildren : Item -> Html Msg
         viewChildren item =
             div [] (List.map viewItem (getChildren item))
 
+        viewItem : Item -> Html Msg
         viewItem item =
             div []
                 [ viewItemTitle item
