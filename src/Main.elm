@@ -27,7 +27,7 @@ port pouchItemsLoaded : (List Item -> msg) -> Sub msg
 port pouchItemChanged : (Item -> msg) -> Sub msg
 
 
-port toJsCache : { items : List Item } -> Cmd msg
+port toJsCache : { items : List Item, maybeFocusedItemId : Maybe String } -> Cmd msg
 
 
 port bulkItemDocs : List Item -> Cmd msg
@@ -163,6 +163,10 @@ focusMaybeItemCmd maybeItem =
         |> Maybe.withDefault Cmd.none
 
 
+cacheModel model =
+    toJsCache { items = getItems model, maybeFocusedItemId = model.maybeFocusedItemId }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
@@ -190,7 +194,7 @@ update message model =
             in
             ( newModel
             , Cmd.batch
-                [ toJsCache { items = getItems newModel }
+                [ cacheModel newModel
                 , getRootItems newModel |> List.head |> focusMaybeItemCmd
                 ]
             )
@@ -233,14 +237,17 @@ update message model =
                                     )
                                 |> List.filterMap identity
                                 |> Debug.log "newRootItems"
+
+                        newModel =
+                            { model
+                                | maybeDndItems = Nothing
+                                , itemLookup = ItemLookup.insertAll updatedItems model.itemLookup
+                            }
                     in
-                    ( { model
-                        | maybeDndItems = Nothing
-                        , itemLookup = ItemLookup.insertAll updatedItems model.itemLookup
-                      }
+                    ( newModel
                     , Cmd.batch
                         [ bulkItemDocs updatedItems
-                        , toJsCache { items = getItems model }
+                        , cacheModel newModel
                         ]
                     )
 
@@ -293,9 +300,13 @@ update message model =
                         |> Maybe.andThen fn
                         |> Maybe.map
                             (\cursor ->
-                                ( { model | itemLookup = ItemTreeCursor.getItemLookup cursor }
+                                let
+                                    newModel =
+                                        { model | itemLookup = ItemTreeCursor.getItemLookup cursor }
+                                in
+                                ( newModel
                                 , Cmd.batch
-                                    [ toJsCache { items = getItems model }
+                                    [ cacheModel newModel
                                     ]
                                 )
                             )
