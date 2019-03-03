@@ -10,6 +10,7 @@ type alias Item =
     , title : String
     , pid : Maybe String
     , childIds : List String
+    , rootIdx : Int
     }
 
 
@@ -78,6 +79,7 @@ getRootItems itemLookup =
                     |> Maybe.map (\_ -> False)
                     |> Maybe.withDefault True
             )
+        |> List.sortBy (\item -> item.rootIdx)
 
 
 getChildrenOfId : String -> ItemLookup -> Maybe (List Item)
