@@ -15,7 +15,6 @@ const initialRootItem = {
   title: 'Root Item',
   pid: null,
   childIds: [],
-  rootIdx: -1,
 }
 
 function createNewItem() {
@@ -25,7 +24,6 @@ function createNewItem() {
     title: faker.lorem.words(),
     pid: rootItemId,
     childIds: [],
-    rootIdx: -1,
   }
 }
 
