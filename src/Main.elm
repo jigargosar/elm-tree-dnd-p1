@@ -189,7 +189,10 @@ update message model =
                     }
             in
             ( newModel
-            , Cmd.batch [ toJsCache { items = getItems newModel } ]
+            , Cmd.batch
+                [ toJsCache { items = getItems newModel }
+                , getRootItems newModel |> List.head |> focusMaybeItemCmd
+                ]
             )
 
         FocusItemResultReceived item result ->
