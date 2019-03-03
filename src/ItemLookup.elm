@@ -1,4 +1,18 @@
-module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getParentAndGrandParentOf, getParentAndPrevPrevSibOf, getParentOfId, getPrevSiblingOfId, getRoot, getRootItems, insertAll, toArray, toList)
+module ItemLookup exposing
+    ( Item
+    , ItemLookup
+    , fromList
+    , getById
+    , getChildrenOfId
+    , getParentAndGrandParentOf
+    , getParentAndPrevPrevSibOf
+    , getParentOfId
+    , getPrevSiblingOfId
+    , getRoot
+    , getRootItems
+    , insertAll
+    , toList
+    )
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -25,6 +39,18 @@ fromList itemList =
         |> Dict.fromList
 
 
+toList : ItemLookup -> List Item
+toList itemLookup =
+    itemLookup |> Dict.values
+
+
+toParentIdLookup : ItemLookup -> Dict String String
+toParentIdLookup itemLookup =
+    toList itemLookup
+        |> List.concatMap (\item -> List.map (\cid -> ( cid, item.id )) item.childIds)
+        |> Dict.fromList
+
+
 insertAll : List Item -> ItemLookup -> ItemLookup
 insertAll items itemLookup =
     List.foldl (\item -> Dict.insert item.id item) itemLookup items
@@ -35,11 +61,6 @@ getRoot itemLookup =
     getById rootItemId itemLookup
 
 
-toList : ItemLookup -> List Item
-toList itemLookup =
-    itemLookup |> Dict.values
-
-
 getById : String -> ItemLookup -> Maybe Item
 getById id itemLookup =
     Dict.get id itemLookup
@@ -47,38 +68,42 @@ getById id itemLookup =
 
 getParentOfId : String -> ItemLookup -> Maybe Item
 getParentOfId id itemLookup =
-    getById id itemLookup
-        |> Maybe.andThen (.pid >> Maybe.andThen (\pid -> getById pid itemLookup))
-
-
-toArray : ItemLookup -> Array Item
-toArray itemLookup =
-    toList itemLookup |> Array.fromList
-
-
-getAncestorIds : String -> ItemLookup -> Maybe (List String)
-getAncestorIds id itemLookup =
-    getById id itemLookup
-        |> Maybe.map (\_ -> getAncestorIdsHelp [] id itemLookup)
-
-
-getAncestorIdsHelp : List String -> String -> ItemLookup -> List String
-getAncestorIdsHelp ancestorIds id itemLookup =
     let
-        maybeParent : Maybe Item
-        maybeParent =
-            getParentOfId id itemLookup
-
-        newAncestorIds : List String
-        newAncestorIds =
-            id :: ancestorIds
+        parentIdLookup : Dict String String
+        parentIdLookup =
+            toParentIdLookup itemLookup
     in
-    case maybeParent of
-        Just parent ->
-            getAncestorIdsHelp newAncestorIds parent.id itemLookup
+    getById id itemLookup
+        |> Maybe.andThen
+            ((\item -> Dict.get item.id parentIdLookup)
+                >> Maybe.andThen (\pid -> getById pid itemLookup)
+            )
 
-        Nothing ->
-            newAncestorIds
+
+
+--getAncestorIds : String -> ItemLookup -> Maybe (List String)
+--getAncestorIds id itemLookup =
+--    getById id itemLookup
+--        |> Maybe.map (\_ -> getAncestorIdsHelp [] id itemLookup)
+--
+--
+--getAncestorIdsHelp : List String -> String -> ItemLookup -> List String
+--getAncestorIdsHelp ancestorIds id itemLookup =
+--    let
+--        maybeParent : Maybe Item
+--        maybeParent =
+--            getParentOfId id itemLookup
+--
+--        newAncestorIds : List String
+--        newAncestorIds =
+--            id :: ancestorIds
+--    in
+--    case maybeParent of
+--        Just parent ->
+--            getAncestorIdsHelp newAncestorIds parent.id itemLookup
+--
+--        Nothing ->
+--            newAncestorIds
 
 
 rootItemId =
