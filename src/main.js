@@ -45,6 +45,12 @@ db.allDocs({ include_docs: true }).then(({ rows }) =>
   ),
 )
 
+db.changes({ include_docs: true, live: true, since: 'now' })
+  .on('change', change => {
+    console.log(change)
+  })
+  .on('error', error => console.error('item changes error', error))
+
 app.ports.toJsCache.subscribe(model => {
   setCache('elm-main', model)
 })
