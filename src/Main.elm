@@ -378,8 +378,13 @@ view model =
         [ div []
             [ button [ onClick AddItemClicked ] [ t "add new" ]
             ]
+        , viewTree model
         , viewDndItemTree model
         ]
+
+
+viewTree model =
+    div [] []
 
 
 viewDndItemTree model =
