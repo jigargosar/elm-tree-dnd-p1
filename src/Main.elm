@@ -403,19 +403,19 @@ viewTree model =
         viewItemTitle item =
             div [ classes [ mv2, pa3, ba, b__black_50, br1 ] ] [ t item.title ]
 
-        viewChildren : Item -> Html Msg
+        viewChildren : Item -> List (Html Msg)
         viewChildren item =
-            div [] (List.map viewItem (getChildren item))
+            List.map viewItem (getChildren item)
 
         viewItem : Item -> Html Msg
         viewItem item =
             div []
                 [ viewItemTitle item
-                , div [ classes [ ml4 ] ] [ viewChildren item ]
+                , div [ classes [ ml4 ] ] (viewChildren item)
                 ]
     in
     mRoot
-        |> Maybe.map viewChildren
+        |> Maybe.map (viewChildren >> div [])
         |> Maybe.withDefault noHtml
 
 
