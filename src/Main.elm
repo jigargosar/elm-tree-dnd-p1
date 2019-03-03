@@ -196,7 +196,10 @@ update message model =
                         | maybeDndItems = Nothing
                         , itemLookup = ItemLookup.insertAll updatedItems model.itemLookup
                       }
-                    , Cmd.batch [ bulkItemDocs updatedItems ]
+                    , Cmd.batch
+                        [ bulkItemDocs updatedItems
+                        , toJsCache { items = getItems model }
+                        ]
                     )
 
                 Nothing ->
@@ -222,7 +225,6 @@ update message model =
             ( { model | draggable = draggable, maybeDndItems = Just rootItems }
             , Cmd.batch
                 [ system.commands model.draggable
-                , toJsCache { items = getItems model }
                 , maybeIdx
                     |> Maybe.andThen (\idx -> getRootItems model |> List.drop idx |> List.head)
                     |> focusMaybeItemCmd
