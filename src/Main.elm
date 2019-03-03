@@ -33,7 +33,7 @@ port toJsCache : { items : List Item, maybeFocusedItemId : Maybe String } -> Cmd
 port bulkItemDocs : List Item -> Cmd msg
 
 
-port newItemDoc : () -> Cmd msg
+port newItemDoc : ( Item, Int ) -> Cmd msg
 
 
 
@@ -89,6 +89,10 @@ getDisplayRootItems model =
 
 getItemById id model =
     ItemLookup.getById id model.itemLookup
+
+
+getRootItem model =
+    ItemLookup.getRoot model.itemLookup
 
 
 
@@ -193,7 +197,16 @@ update message model =
             )
 
         AddItemClicked ->
-            ( model, Cmd.batch [ newItemDoc () ] )
+            getRootItem model
+                |> Maybe.map
+                    (\rootItem ->
+                        ( model
+                        , Cmd.batch
+                            [ newItemDoc ( rootItem, List.length rootItem.childIds )
+                            ]
+                        )
+                    )
+                |> Maybe.withDefault ( model, Cmd.none )
 
         PouchItemsLoaded items ->
             let

@@ -81,7 +81,7 @@ db.changes({ include_docs: true, live: true, since: 'now' })
   })
   .on('error', error => console.error('item changes error', error))
 
-app.ports.newItemDoc.subscribe((parent, idx) => {
+app.ports.newItemDoc.subscribe(function(parent, idx) {
   validate('ON', arguments)
 
   const newItem = createNewItem()
