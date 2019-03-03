@@ -424,10 +424,6 @@ viewTree model =
         |> Maybe.withDefault noHtml
 
 
-viewForest forest =
-    div [] []
-
-
 viewDndItemTree model =
     let
         viewConfig =
