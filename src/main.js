@@ -1,6 +1,13 @@
 // noinspection JSUnresolvedVariable
 import { getCached, setCache } from './cache-helpers'
-import { compose, defaultTo, isEmpty, mergeDeepRight, omit } from 'ramda'
+import {
+  compose,
+  defaultTo,
+  insert,
+  isEmpty,
+  mergeDeepRight,
+  omit,
+} from 'ramda'
 import './main.scss'
 import { Elm } from './Main.elm'
 import PouchDb from 'pouchdb-browser'
@@ -74,8 +81,20 @@ db.changes({ include_docs: true, live: true, since: 'now' })
   })
   .on('error', error => console.error('item changes error', error))
 
-app.ports.newItemDoc.subscribe(() => {
-  db.put(itemToPouchDoc(createNewItem()))
+app.ports.newItemDoc.subscribe((parent, idx) => {
+  validate('ON', arguments)
+
+  const newItem = createNewItem()
+  db.put(
+    itemToPouchDoc({
+      ...parent,
+      childIds: insert(idx)(newItem.id)(parent.childIds),
+    }),
+  )
+    .then(() => {
+      return db.put(itemToPouchDoc(newItem))
+    })
+    .catch(console.error)
 })
 
 app.ports.toJsCache.subscribe(model => {
