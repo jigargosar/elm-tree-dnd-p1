@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/elm-interpreter-p1.iml" filepath="$PROJECT_DIR$/elm-interpreter-p1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/elm-tree-dnd-p1.iml" filepath="$PROJECT_DIR$/elm-tree-dnd-p1.iml" />
     </modules>
   </component>
 </project>
