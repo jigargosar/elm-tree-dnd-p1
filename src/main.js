@@ -74,9 +74,7 @@ app.ports.newItemDoc.subscribe(function([parent, idx]) {
       childIds: insert(idx)(newItem.id)(parent.childIds),
     }),
   )
-    .then(() => {
-      return db.put(itemToPouchDoc(newItem))
-    })
+    .then(() => db.put(itemToPouchDoc(newItem)))
     .catch(console.error)
 })
 
