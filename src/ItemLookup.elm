@@ -1,9 +1,8 @@
-module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getParentById, getPrevSibling, getRootItems, insertAll, toArray, toList)
+module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getParentById, getPrevSibling, getRoot, getRootItems, insertAll, toArray, toList)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
 import List.Extra
-import Maybe.Extra
 
 
 type alias Item =
@@ -12,18 +11,6 @@ type alias Item =
     , title : String
     , pid : Maybe String
     , childIds : List String
-    , rootIdx : Int
-    }
-
-
-initialRootItem : Item
-initialRootItem =
-    { id = "i_root_item"
-    , rev = Nothing
-    , title = "Root Item Title"
-    , pid = Nothing
-    , childIds = []
-    , rootIdx = 0
     }
 
 
@@ -41,6 +28,11 @@ fromList itemList =
 insertAll : List Item -> ItemLookup -> ItemLookup
 insertAll items itemLookup =
     List.foldl (\item -> Dict.insert item.id item) itemLookup items
+
+
+getRoot : ItemLookup -> Maybe Item
+getRoot itemLookup =
+    getById rootItemId itemLookup
 
 
 toList : ItemLookup -> List Item
@@ -88,16 +80,19 @@ getAncestorIdsHelp ancestorIds id itemLookup =
             newAncestorIds
 
 
-getRootItems : ItemLookup -> List Item
+rootItemId =
+    "i_root_item_id"
+
+
+getRootItems : ItemLookup -> Maybe (List Item)
 getRootItems itemLookup =
-    toList itemLookup
-        |> List.filter
-            (\item ->
-                item.pid
-                    |> Maybe.map (\_ -> False)
-                    |> Maybe.withDefault True
-            )
-        |> List.sortBy (\item -> item.rootIdx)
+    getChildrenOfId rootItemId itemLookup
+
+
+
+--getRootItemsOrEmpty : ItemLookup -> (List Item)
+--getRootItemsOrEmpty itemLookup =
+--    getRootItems itemLookup |> Maybe.withDefault []
 
 
 getChildrenOfId : String -> ItemLookup -> Maybe (List Item)
@@ -125,16 +120,6 @@ getPrevSibling id itemLookup =
                             |> Maybe.andThen (\cid -> getById cid itemLookup)
                 in
                 maybePrevSibling
-            )
-        |> Maybe.Extra.orElseLazy
-            (\_ ->
-                let
-                    rootItemList =
-                        getRootItems itemLookup
-                in
-                rootItemList
-                    |> List.Extra.findIndex (.id >> (==) id)
-                    |> Maybe.andThen (\idx -> rootItemList |> List.Extra.getAt (idx - 1))
             )
 
 

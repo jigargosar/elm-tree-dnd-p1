@@ -10,7 +10,6 @@ import Html.Attributes exposing (id, tabindex)
 import Html.Events exposing (onBlur, onClick, onFocus)
 import Html.Keyed
 import ItemLookup exposing (Item, ItemLookup)
-import ItemTreeCursor exposing (ItemTreeCursor)
 import Json.Decode exposing (Decoder)
 import Maybe.Extra
 import Tachyons exposing (classes)
@@ -75,8 +74,8 @@ getItems model =
     model.itemLookup |> ItemLookup.toList
 
 
-getRootItems model =
-    model.itemLookup |> ItemLookup.getRootItems
+getRootItemsOrEmpty model =
+    model.itemLookup |> ItemLookup.getRootItems |> Maybe.withDefault []
 
 
 getDisplayRootItems model =
@@ -85,7 +84,7 @@ getDisplayRootItems model =
             items
 
         Nothing ->
-            getRootItems model
+            getRootItemsOrEmpty model
 
 
 getItemById id model =
@@ -175,7 +174,7 @@ cacheNewModel model =
 refocusItemCmd model =
     model.maybeFocusedItemId
         |> Maybe.andThen (\id -> getItemById id model)
-        |> Maybe.Extra.orElseLazy (\_ -> getRootItems model |> List.head)
+        |> Maybe.Extra.orElseLazy (\_ -> getRootItemsOrEmpty model |> List.head)
         |> focusMaybeItemCmd
 
 
@@ -234,40 +233,42 @@ update message model =
             ( model, Cmd.none )
 
         MouseUpReceived ->
-            case model.maybeDndItems of
-                Just items ->
+            let
+                _ =
+                    Debug.log "MouseUpReceived" ()
+            in
+            case ( model.maybeDndItems, ItemLookup.getRoot model.itemLookup ) of
+                ( Just items, Just root ) ->
                     let
-                        _ =
-                            Debug.log "MouseUpReceived" ()
-
-                        updatedItems : List Item
-                        updatedItems =
-                            items
-                                |> List.indexedMap
-                                    (\idx item ->
-                                        if item.rootIdx == idx then
-                                            Nothing
-
-                                        else
-                                            Just { item | rootIdx = idx }
-                                    )
-                                |> List.filterMap identity
-                                |> Debug.log "newRootItems"
-
-                        newModel =
-                            { model
-                                | maybeDndItems = Nothing
-                                , itemLookup = ItemLookup.insertAll updatedItems model.itemLookup
-                            }
+                        newRootChildIds =
+                            List.map .id items
                     in
-                    ( newModel
-                    , Cmd.batch
-                        [ bulkItemDocs updatedItems
-                        , cacheNewModel newModel
-                        ]
-                    )
+                    if newRootChildIds /= root.childIds then
+                        let
+                            newRoot : Item
+                            newRoot =
+                                { root | childIds = newRootChildIds }
 
-                Nothing ->
+                            updatedItems =
+                                [ newRoot ]
+
+                            newModel =
+                                { model
+                                    | maybeDndItems = Nothing
+                                    , itemLookup = ItemLookup.insertAll updatedItems model.itemLookup
+                                }
+                        in
+                        ( newModel
+                        , Cmd.batch
+                            [ bulkItemDocs updatedItems
+                            , cacheNewModel newModel
+                            ]
+                        )
+
+                    else
+                        ( model, Cmd.none )
+
+                _ ->
                     ( model, Cmd.none )
 
         DndMsgReceived msg ->
@@ -313,24 +314,6 @@ update message model =
             let
                 _ =
                     Debug.log "KeyDownReceived" keyEvent
-
-                updateFocusedItemTreeCursor fn =
-                    model.maybeFocusedItemId
-                        |> Maybe.andThen (\id -> ItemTreeCursor.forId id model.itemLookup)
-                        |> Maybe.andThen fn
-                        |> Maybe.map
-                            (\cursor ->
-                                let
-                                    newModel =
-                                        { model | itemLookup = ItemTreeCursor.getItemLookup cursor }
-                                in
-                                ( newModel
-                                , Cmd.batch
-                                    [ cacheNewModel newModel
-                                    ]
-                                )
-                            )
-                        |> Maybe.withDefault ( model, Cmd.none )
             in
             if keyEvent.meta then
                 case keyEvent.key of
