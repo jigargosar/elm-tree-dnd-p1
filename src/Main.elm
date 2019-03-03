@@ -384,9 +384,9 @@ view model =
 
 viewDndItemTree model =
     let
-        config =
+        viewConfig =
             { system = system, onFocusMsg = ItemReceivedFocus, onBlurMsg = ItemLostFocus }
     in
-    ViewDndItemTree.viewDndItemTree config
+    ViewDndItemTree.viewDndItemTree viewConfig
         (getDisplayRootItems model)
         model.draggable
