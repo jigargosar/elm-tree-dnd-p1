@@ -47,7 +47,7 @@ function focusOffset(event, offset) {
     R.unless(R.isNil)(R.invoker(0, 'focus')),
     R.defaultTo(focusable[0]),
     R.nth(idx + offset),
-  )(focusable).focus()
+  )(focusable)
 }
 
 window.addEventListener('keydown', function(event) {
