@@ -323,9 +323,6 @@ update message model =
 
         ItemFocused item ->
             let
-                _ =
-                    item |> Debug.log "itemFocused"
-
                 newModel =
                     { model | maybeFocusedItemId = Just item.id }
             in
