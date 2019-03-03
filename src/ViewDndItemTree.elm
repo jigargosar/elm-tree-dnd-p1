@@ -22,6 +22,11 @@ type alias Config msg =
     }
 
 
+getItemDomId : Item -> String
+getItemDomId item =
+    "item-dnd-id-" ++ item.id
+
+
 viewDndItemTree : Config msg -> List Item -> DnDList.Draggable -> Html msg
 viewDndItemTree config displayRootItems draggable =
     let
@@ -55,11 +60,6 @@ viewItemWithTitle attrs title =
             :: attrs
         )
         [ t <| title ]
-
-
-getItemDomId : Item -> String
-getItemDomId item =
-    "item-id-" ++ item.id
 
 
 viewDraggableItem : Config msg -> DnDList.System msg Item -> DnDList.Draggable -> Int -> Item -> Html msg

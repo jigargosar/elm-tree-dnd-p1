@@ -14,7 +14,7 @@ import Maybe.Extra
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
 import Task
-import V exposing (btn, cc, co, rr, t, tInt)
+import V exposing (btn, cc, co, noHtml, rr, t, tInt)
 import ViewDndItemTree
 
 
@@ -91,6 +91,7 @@ getItemById id model =
     ItemLookup.getById id model.itemLookup
 
 
+getRootItem : Model -> Maybe Item
 getRootItem model =
     ItemLookup.getRoot model.itemLookup
 
@@ -384,6 +385,31 @@ view model =
 
 
 viewTree model =
+    let
+        mRoot =
+            getRootItem model
+
+        getChildren : Item -> List Item
+        getChildren item =
+            ItemLookup.getChildrenOfId item.id model.itemLookup
+                |> Maybe.withDefault []
+
+        viewItemTitle item =
+            div [ classes [ pa3, ba, b__black_50, br1 ] ] [ t item.title ]
+
+        viewId : String -> Html Msg
+        viewId iid =
+            div [ classes [ mv2, pa3, ba, b__black_50, br1 ] ] [ t iid ]
+
+        viewChildren item =
+            div [] (List.map viewId item.childIds)
+    in
+    mRoot
+        |> Maybe.map viewChildren
+        |> Maybe.withDefault noHtml
+
+
+viewForest forest =
     div [] []
 
 
@@ -392,6 +418,8 @@ viewDndItemTree model =
         viewConfig =
             { system = system, onFocusMsg = ItemReceivedFocus, onBlurMsg = ItemLostFocus }
     in
-    ViewDndItemTree.viewDndItemTree viewConfig
-        (getDisplayRootItems model)
-        model.draggable
+    div [ classes [ dn ] ]
+        [ ViewDndItemTree.viewDndItemTree viewConfig
+            (getDisplayRootItems model)
+            model.draggable
+        ]
