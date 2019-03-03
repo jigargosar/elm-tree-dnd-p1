@@ -15,7 +15,6 @@ import validate from 'aproba'
 import nanoid from 'nanoid'
 import faker from 'faker'
 
-// const items = times(createNewItem)(3)
 const rootItemId = 'i_root_item_id'
 const initialRootItem = {
   id: rootItemId,
