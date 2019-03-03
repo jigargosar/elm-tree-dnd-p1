@@ -77,11 +77,17 @@ getChildrenOfId parentId itemLookup =
     toList itemLookup |> List.filter (\parent -> parentId == parent.id)
 
 
+getSiblingsOfId : String -> ItemLookup -> Maybe (List Item)
+getSiblingsOfId id itemLookup =
+    getParentById id itemLookup
+        |> Maybe.map (\parent -> getChildrenOfId parent.id itemLookup)
 
---getPrevSibling: String -> ItemLookup -> Maybe (List Item)
---getPrevSibling id itemLookup =
---    getParentById id itemLookup
---        |> Maybe.map(\parent -> getChildrenById parent.id itemLookup)
---
+
+getPrevSibling : String -> ItemLookup -> Maybe (List Item)
+getPrevSibling id itemLookup =
+    getSiblingsOfId id itemLookup
+
+
+
 --
 --        |> Array.
