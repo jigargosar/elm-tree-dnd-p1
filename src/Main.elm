@@ -27,6 +27,9 @@ port toJsCache : { items : List Item } -> Cmd msg
 port bulkItemDocs : List Item -> Cmd msg
 
 
+port debouncedBulkItemDocs : List Item -> Cmd msg
+
+
 main =
     Browser.element { init = init, update = update, view = view, subscriptions = subscriptions }
 
@@ -158,20 +161,33 @@ update message model =
 
         DndMsgReceived msg ->
             let
-                ( draggable, items ) =
+                ( draggable, rootItems ) =
                     system.update msg model.draggable (getRootItems model)
 
                 maybeIdx =
                     system.draggedIndex model.draggable
+
+                newRootItems : List Item
+                newRootItems =
+                    rootItems
+                        |> List.indexedMap
+                            (\idx item ->
+                                if item.rootIdx == idx then
+                                    Nothing
+
+                                else
+                                    Just { item | rootIdx = idx }
+                            )
+                        |> List.filterMap identity
             in
-            ( { model | draggable = draggable, itemLookup = ItemLookup.insertAll items model.itemLookup }
+            ( { model | draggable = draggable, itemLookup = ItemLookup.insertAll newRootItems model.itemLookup }
             , Cmd.batch
                 [ system.commands model.draggable
                 , toJsCache { items = getItems model }
                 , maybeIdx
                     |> Maybe.andThen (\idx -> getRootItems model |> List.drop idx |> List.head)
                     |> focusMaybeItemCmd
-                , bulkItemDocs []
+                , debouncedBulkItemDocs newRootItems
                 ]
             )
 
