@@ -355,6 +355,12 @@ update message model =
                     "ArrowRight" ->
                         onNestFocused model
 
+                    "ArrowUp" ->
+                        onUnnestFocused model
+
+                    "ArrowDown" ->
+                        onNestFocused model
+
                     _ ->
                         ( model, Cmd.none )
 
