@@ -338,35 +338,37 @@ update message model =
                         ( model, Cmd.none )
 
                     "ArrowRight" ->
-                        model.maybeFocusedItemId
-                            |> Debug.log "maybeFocusedItemId"
-                            |> Maybe.andThen
-                                (\id ->
-                                    ItemLookup.getPrevSibAndParentOf id model.itemLookup
-                                        |> Debug.log "getPrevSibAndParentOf"
-                                        |> Maybe.map
-                                            (\( newParent, oldParent ) ->
-                                                let
-                                                    i1 =
-                                                        { oldParent | childIds = List.filter ((/=) id) oldParent.childIds }
-
-                                                    i2 =
-                                                        { newParent | childIds = id :: newParent.childIds }
-                                                in
-                                                [ i1, i2 ]
-                                            )
-                                )
-                            |> Maybe.map
-                                (\uItems ->
-                                    ( model, bulkItemDocs uItems )
-                                )
-                            |> Maybe.withDefault ( model, Cmd.none )
+                        updateNestFocused model
 
                     _ ->
                         ( model, Cmd.none )
 
             else
                 ( model, Cmd.none )
+
+
+updateNestFocused model =
+    let
+        updateParents : String -> Item -> Item -> List Item
+        updateParents id oldParent newParent =
+            [ { oldParent | childIds = List.filter ((/=) id) oldParent.childIds }
+            , { newParent | childIds = id :: newParent.childIds }
+            ]
+    in
+    model.maybeFocusedItemId
+        |> Maybe.andThen
+            (\id ->
+                ItemLookup.getPrevSibAndParentOf id model.itemLookup
+                    |> Maybe.map
+                        (\( newParent, oldParent ) ->
+                            updateParents id oldParent newParent
+                        )
+            )
+        |> Maybe.map
+            (\uItems ->
+                ( model, bulkItemDocs uItems )
+            )
+        |> Maybe.withDefault ( model, Cmd.none )
 
 
 
