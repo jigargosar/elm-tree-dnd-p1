@@ -1,19 +1,14 @@
 // noinspection JSUnresolvedVariable
 import { getCached, setCache } from './cache-helpers'
-import { compose, defaultTo, isEmpty, mergeDeepRight } from 'ramda'
+import { compose, defaultTo, isEmpty, mergeDeepRight, times } from 'ramda'
 import './main.scss'
 import { Elm } from './Main.elm'
 import PouchDb from 'pouchdb-browser'
 import faker from 'faker'
-import * as nanoid from 'nanoid'
+import nanoid from 'nanoid'
 import validate from 'aproba'
 
-const items = [
-  { id: '1', title: 'One', pid: null, childIds: [] },
-  { id: '2', title: 'Two', pid: null, childIds: [] },
-  { id: '3', title: 'Three', pid: null, childIds: [] },
-  //
-]
+const items = times(createNewItem)(3)
 
 function createNewItem() {
   return {
