@@ -119,7 +119,7 @@ getPrevSiblingOfId id itemLookup =
             )
 
 
-getParentAndPrevPrevSibOf : String -> ItemLookup -> Maybe ( Item, Item )
+getParentAndPrevPrevSibOf : String -> ItemLookup -> Maybe ( String, Item, Item )
 getParentAndPrevPrevSibOf id itemLookup =
     getParentOfId id itemLookup
         |> Debug.log "getParentOfId"
@@ -129,7 +129,7 @@ getParentAndPrevPrevSibOf id itemLookup =
                     |> List.Extra.findIndex ((==) id)
                     |> Maybe.andThen (\idx -> parent.childIds |> List.Extra.getAt (idx - 1))
                     |> Maybe.andThen (\cid -> getById cid itemLookup)
-                    |> Maybe.map (\prevSib -> ( parent, prevSib ))
+                    |> Maybe.map (\prevSib -> ( id, parent, prevSib ))
             )
 
 

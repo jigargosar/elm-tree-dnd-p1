@@ -358,10 +358,10 @@ onNestFocused model =
         |> Maybe.andThen
             (\id ->
                 ItemLookup.getParentAndPrevPrevSibOf id model.itemLookup
-                    |> Maybe.map
-                        (\( newParent, oldParent ) ->
-                            updateParents id oldParent newParent
-                        )
+            )
+        |> Maybe.map
+            (\( id, oldParent, newParent ) ->
+                updateParents id oldParent newParent
             )
         |> Maybe.map
             (\uItems ->
@@ -382,10 +382,10 @@ onUnnestFocused model =
         |> Maybe.andThen
             (\id ->
                 ItemLookup.getParentAndPrevPrevSibOf id model.itemLookup
-                    |> Maybe.map
-                        (\( newParent, oldParent ) ->
-                            updateParents id oldParent newParent
-                        )
+            )
+        |> Maybe.map
+            (\( id, oldParent, newParent ) ->
+                updateParents id oldParent newParent
             )
         |> Maybe.map
             (\uItems ->
