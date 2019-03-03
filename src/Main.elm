@@ -373,7 +373,7 @@ onNestFocused model =
             (\( id, oldParent, newParent ) ->
                 updateParents id oldParent newParent
                     |> (\updatedItems ->
-                            ( model, Cmd.batch [ refocusItemCmd model, bulkItemDocs updatedItems ] )
+                            ( model, bulkItemDocs updatedItems )
                        )
             )
         |> Maybe.withDefault ( model, Cmd.none )
@@ -407,7 +407,7 @@ onUnnestFocused model =
             (\( id, parent, grandParent ) ->
                 updateParents id parent grandParent
                     |> (\updatedItems ->
-                            ( model, Cmd.batch [ refocusItemCmd model, bulkItemDocs updatedItems ] )
+                            ( model, bulkItemDocs updatedItems )
                        )
             )
         |> Maybe.withDefault ( model, Cmd.none )
