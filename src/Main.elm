@@ -12,6 +12,7 @@ import Html.Keyed
 import ItemLookup exposing (Item, ItemLookup)
 import ItemTreeCursor exposing (ItemTreeCursor)
 import Json.Decode exposing (Decoder)
+import Maybe.Extra
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
 import Task
@@ -171,6 +172,13 @@ cacheModel model =
     toJsCache { items = getItems model, maybeFocusedItemId = model.maybeFocusedItemId }
 
 
+refocusItemCmd model =
+    model.maybeFocusedItemId
+        |> Maybe.andThen (\id -> getItemById id model)
+        |> Maybe.Extra.orElseLazy (\_ -> getRootItems model |> List.head)
+        |> focusMaybeItemCmd
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
@@ -199,7 +207,7 @@ update message model =
             ( newModel
             , Cmd.batch
                 [ cacheModel newModel
-                , getRootItems newModel |> List.head |> focusMaybeItemCmd
+                , refocusItemCmd newModel
                 ]
             )
 
@@ -218,9 +226,7 @@ update message model =
         InitReceived ->
             ( model
             , Cmd.batch
-                [ model.maybeFocusedItemId
-                    |> Maybe.andThen (\id -> getItemById id model)
-                    |> focusMaybeItemCmd
+                [ refocusItemCmd model
                 ]
             )
 
