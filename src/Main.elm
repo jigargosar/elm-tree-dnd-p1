@@ -401,7 +401,11 @@ viewTree model =
 
         viewItemTitle : Item -> Html Msg
         viewItemTitle item =
-            div [ classes [ mv2, pa3, ba, b__black_50, br1 ] ] [ t item.title ]
+            div
+                [ classes [ mv2, pa3, ba, b__black_50, br1 ]
+                , tabindex 0
+                ]
+                [ t item.title ]
 
         viewChildren : Item -> List (Html Msg)
         viewChildren item =
