@@ -5,7 +5,7 @@ import Browser
 import Browser.Dom
 import Browser.Events exposing (onKeyDown)
 import DnDList
-import Html exposing (Html, div)
+import Html exposing (Html, button, div)
 import Html.Attributes exposing (id, tabindex)
 import Html.Events exposing (onBlur, onClick, onFocus)
 import Html.Keyed
@@ -392,7 +392,10 @@ view model =
             getDisplayRootItems model
     in
     co [ sans_serif, measure ]
-        [ Html.Keyed.node "div"
+        [ div []
+            [ button [ onClick AddItemClicked ] [ t "add new" ]
+            ]
+        , Html.Keyed.node "div"
             [ classes [] ]
             (List.indexedMap
                 (\idx item -> ( getItemKey item, viewDraggableItem maybeDraggedIndex idx item ))

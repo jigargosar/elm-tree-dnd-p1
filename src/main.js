@@ -5,19 +5,29 @@ import './main.scss'
 import { Elm } from './Main.elm'
 import PouchDb from 'pouchdb-browser'
 import validate from 'aproba'
+import nanoid from 'nanoid'
 
 // const items = times(createNewItem)(3)
-//
-// function createNewItem() {
-//   return {
-//     id: 'i_' + nanoid(),
-//     rev: null,
-//     title: faker.lorem.words(),
-//     pid: null,
-//     childIds: [],
-//     rootIdx: -1,
-//   }
-// }
+const rootItemId = 'i_root_item_id'
+const initialRootItem = {
+  id: rootItemId,
+  rev: null,
+  title: 'Root Item',
+  pid: null,
+  childIds: [],
+  rootIdx: -1,
+}
+
+function createNewItem() {
+  return {
+    id: 'i_' + nanoid(),
+    rev: null,
+    title: faker.lorem.words(),
+    pid: rootItemId,
+    childIds: [],
+    rootIdx: -1,
+  }
+}
 
 const elmMainCached = compose(
   mergeDeepRight({ items: [], maybeFocusedItemId: null }),
@@ -39,10 +49,21 @@ function pouchDocToItem(doc) {
   const rev = doc._rev
   return { id, rev, ...omit(['_id', '_rev'])(doc) }
 }
+function itemToPouchDoc(item) {
+  return {
+    _id: item.id,
+    _rev: item.rev,
+    ...omit(['id', 'rev'])(item),
+  }
+}
 
-db.allDocs({ include_docs: true }).then(({ rows }) =>
-  app.ports.pouchItemsLoaded.send(rows.map(r => pouchDocToItem(r.doc))),
-)
+db.allDocs({ include_docs: true }).then(({ rows }) => {
+  if (rows.length === 0) {
+    db.put(itemToPouchDoc(initialRootItem))
+  } else {
+    app.ports.pouchItemsLoaded.send(rows.map(r => pouchDocToItem(r.doc)))
+  }
+})
 
 db.changes({ include_docs: true, live: true, since: 'now' })
   .on('change', change => {
@@ -54,6 +75,10 @@ db.changes({ include_docs: true, live: true, since: 'now' })
   })
   .on('error', error => console.error('item changes error', error))
 
+app.ports.newItemDoc.subscribe(() => {
+  db.put(createNewItem())
+})
+
 app.ports.toJsCache.subscribe(model => {
   setCache('elm-main', model)
 })
@@ -63,11 +88,8 @@ function bulkItemDocs(items) {
 
   console.log('bulkItemDocs: items', items)
   if (!isEmpty(items)) {
-    const docs = items.map(item => ({
-      _id: item.id,
-      _rev: item.rev,
-      ...omit(['id', 'rev'])(item),
-    }))
+    const docs = items.map(itemToPouchDoc)
+
     console.log('bulkItemDocs: docs', docs)
     db.bulkDocs(docs)
       .then(res => console.log('ports.bulkItemDocs res', res))

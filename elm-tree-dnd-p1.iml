@@ -16,5 +16,6 @@
     <orderEntry type="library" name="@types/pouchdb-browser" level="application" />
     <orderEntry type="library" name="@types/ramda" level="application" />
     <orderEntry type="library" name="@types/faker" level="application" />
+    <orderEntry type="library" name="@types/nanoid" level="application" />
   </component>
 </module>
