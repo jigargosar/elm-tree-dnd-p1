@@ -163,11 +163,16 @@ type Msg
     | PouchItemChanged Item
 
 
+getItemDomId : Item -> String
+getItemDomId item =
+    "item-id-" ++ item.id
+
+
 focusMaybeItemCmd maybeItem =
     maybeItem
         |> Maybe.map
             (\item ->
-                Browser.Dom.focus (ViewDndItemTree.getItemDomId item)
+                Browser.Dom.focus (getItemDomId item)
                     |> Task.attempt (FocusItemResultReceived item)
             )
         |> Maybe.withDefault Cmd.none
@@ -368,7 +373,7 @@ onNestFocused model =
             (\( id, oldParent, newParent ) ->
                 updateParents id oldParent newParent
                     |> (\updatedItems ->
-                            ( model, bulkItemDocs updatedItems )
+                            ( model, Cmd.batch [ refocusItemCmd model, bulkItemDocs updatedItems ] )
                        )
             )
         |> Maybe.withDefault ( model, Cmd.none )
@@ -402,7 +407,7 @@ onUnnestFocused model =
             (\( id, parent, grandParent ) ->
                 updateParents id parent grandParent
                     |> (\updatedItems ->
-                            ( model, bulkItemDocs updatedItems )
+                            ( model, Cmd.batch [ refocusItemCmd model, bulkItemDocs updatedItems ] )
                        )
             )
         |> Maybe.withDefault ( model, Cmd.none )
@@ -443,6 +448,7 @@ viewTree model =
             div
                 [ classes [ mv2, pa3, ba, b__black_50, br1 ]
                 , tabindex 0
+                , Html.Attributes.id <| getItemDomId item
                 , onFocus <| ItemFocused item
                 , onBlur <| ItemLostFocus item
                 ]
