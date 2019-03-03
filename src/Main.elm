@@ -168,7 +168,7 @@ focusMaybeItemCmd maybeItem =
         |> Maybe.withDefault Cmd.none
 
 
-cacheModel model =
+cacheNewModel model =
     toJsCache { items = getItems model, maybeFocusedItemId = model.maybeFocusedItemId }
 
 
@@ -206,7 +206,7 @@ update message model =
             in
             ( newModel
             , Cmd.batch
-                [ cacheModel newModel
+                [ cacheNewModel newModel
                 , refocusItemCmd newModel
                 ]
             )
@@ -263,7 +263,7 @@ update message model =
                     ( newModel
                     , Cmd.batch
                         [ bulkItemDocs updatedItems
-                        , cacheModel newModel
+                        , cacheNewModel newModel
                         ]
                     )
 
@@ -289,7 +289,11 @@ update message model =
             )
 
         ItemReceivedFocus item ->
-            ( { model | maybeFocusedItemId = Just item.id }, Cmd.none )
+            let
+                newModel =
+                    { model | maybeFocusedItemId = Just item.id }
+            in
+            ( newModel, Cmd.batch [ cacheNewModel newModel ] )
 
         ItemLostFocus item ->
             let
@@ -303,7 +307,7 @@ update message model =
                     else
                         model
             in
-            ( newModel, Cmd.none )
+            ( newModel, Cmd.batch [ cacheNewModel newModel ] )
 
         KeyDownReceived keyEvent ->
             let
@@ -322,7 +326,7 @@ update message model =
                                 in
                                 ( newModel
                                 , Cmd.batch
-                                    [ cacheModel newModel
+                                    [ cacheNewModel newModel
                                     ]
                                 )
                             )
