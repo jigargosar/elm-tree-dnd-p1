@@ -137,6 +137,7 @@ type Msg
     | MouseUpReceived
     | InitReceived
     | ReplaceItemsReceived (List Item)
+    | PouchItemChangeReceived Item
 
 
 focusMaybeItemCmd maybeItem =
@@ -155,11 +156,22 @@ update message model =
         NOP ->
             ( model, Cmd.none )
 
+        PouchItemChangeReceived item ->
+            ( { model
+                | itemLookup = ItemLookup.insertAll [ item ] model.itemLookup
+                , maybeDndItems = Nothing
+              }
+            , Cmd.none
+            )
+
         AddItemClicked ->
             ( model, Cmd.batch [ newItemDoc () ] )
 
         ReplaceItemsReceived items ->
-            ( { model | itemLookup = ItemLookup.fromList items, maybeDndItems = Nothing }
+            ( { model
+                | itemLookup = ItemLookup.fromList items
+                , maybeDndItems = Nothing
+              }
             , Cmd.batch [ toJsCache { items = getItems model } ]
             )
 
