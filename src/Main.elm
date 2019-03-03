@@ -385,7 +385,7 @@ onUnnestFocused model =
                         [ { parent | childIds = List.filter ((/=) id) parent.childIds }
                         , { grandParent
                             | childIds =
-                                List.Extra.splitAt parentIdx grandParent.childIds
+                                List.Extra.splitAt (parentIdx + 1) grandParent.childIds
                                     |> (\( pre, post ) -> pre ++ [ id ] ++ post)
                           }
                         ]
