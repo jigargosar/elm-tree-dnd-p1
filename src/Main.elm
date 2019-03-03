@@ -356,16 +356,60 @@ update message model =
                         onNestFocused model
 
                     "ArrowUp" ->
-                        onUnnestFocused model
+                        moveFocusedBy -1 model
 
                     "ArrowDown" ->
-                        onNestFocused model
+                        moveFocusedBy 1 model
 
                     _ ->
                         ( model, Cmd.none )
 
             else
                 ( model, Cmd.none )
+
+
+moveFocusedBy offset model =
+    model.maybeFocusedItemId
+        |> Maybe.andThen
+            (\id ->
+                ItemLookup.getParentOfId id model.itemLookup
+                    |> Maybe.andThen
+                        (\parent ->
+                            parent.childIds
+                                |> List.Extra.findIndex ((==) id)
+                                |> Maybe.map
+                                    (\idx ->
+                                        let
+                                            newIdx =
+                                                idx + offset
+
+                                            rolledNewIdx =
+                                                if newIdx >= List.length parent.childIds then
+                                                    0
+
+                                                else if newIdx < 0 then
+                                                    List.length parent.childIds - 1
+
+                                                else
+                                                    newIdx
+
+                                            maybeNewIdx =
+                                                if newIdx >= List.length parent.childIds then
+                                                    Nothing
+
+                                                else if newIdx < 0 then
+                                                    Nothing
+
+                                                else
+                                                    Just newIdx
+                                        in
+                                        maybeNewIdx
+                                            |> Maybe.map (\finalIdx -> List.Extra.swapAt idx finalIdx parent.childIds)
+                                    )
+                        )
+            )
+        |> Maybe.map (\updatedItem -> ( model, bulkItemDocs [ updatedItem ] ))
+        |> Maybe.withDefault ( model, Cmd.none )
 
 
 onNestFocused model =
