@@ -140,6 +140,7 @@ getParentAndGrandParentOf id itemLookup =
         |> Maybe.andThen
             (\parent ->
                 getParentOfId parent.id itemLookup
+                    |> Debug.log "getParentOfId"
                     |> Maybe.map (\grandParent -> ( id, parent, grandParent ))
             )
 

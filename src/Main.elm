@@ -154,7 +154,7 @@ type Msg
     | FromJs Int
     | FocusItemResultReceived Item (Result Browser.Dom.Error ())
     | DndMsgReceived DnDList.Msg
-    | ItemReceivedFocus Item
+    | ItemFocused Item
     | ItemLostFocus Item
     | KeyDownReceived KeyEvent
     | MouseUpReceived
@@ -307,7 +307,7 @@ update message model =
                 ]
             )
 
-        ItemReceivedFocus item ->
+        ItemFocused item ->
             let
                 newModel =
                     { model | maybeFocusedItemId = Just item.id }
@@ -440,6 +440,8 @@ viewTree model =
             div
                 [ classes [ mv2, pa3, ba, b__black_50, br1 ]
                 , tabindex 0
+                , onFocus <| ItemFocused item
+                , onBlur <| ItemLostFocus item
                 ]
                 [ t item.title ]
 
@@ -462,7 +464,7 @@ viewTree model =
 viewDndItemTree model =
     let
         viewConfig =
-            { system = system, onFocusMsg = ItemReceivedFocus, onBlurMsg = ItemLostFocus }
+            { system = system, onFocusMsg = ItemFocused, onBlurMsg = ItemLostFocus }
     in
     div [ classes [ dn ] ]
         [ ViewDndItemTree.viewDndItemTree viewConfig
