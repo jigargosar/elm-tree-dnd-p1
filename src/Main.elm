@@ -21,7 +21,10 @@ import V exposing (btn, cc, co, rr, t, tInt)
 port fromJs : (Int -> msg) -> Sub msg
 
 
-port replaceItems : (List Item -> msg) -> Sub msg
+port pouchItemsLoaded : (List Item -> msg) -> Sub msg
+
+
+port pouchItemChange : (Item -> msg) -> Sub msg
 
 
 port toJsCache : { items : List Item } -> Cmd msg
@@ -98,7 +101,8 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ fromJs FromJs
-        , replaceItems ReplaceItemsReceived
+        , pouchItemsLoaded PouchItemsLoaded
+        , pouchItemChange PouchItemChanged
         , system.subscriptions model.draggable
         , onKeyDown <| Json.Decode.map KeyDownReceived keyEventDecoder
         , Browser.Events.onMouseUp <| Json.Decode.succeed MouseUpReceived
@@ -136,8 +140,8 @@ type Msg
     | KeyDownReceived KeyEvent
     | MouseUpReceived
     | InitReceived
-    | ReplaceItemsReceived (List Item)
-    | PouchItemChangeReceived Item
+    | PouchItemsLoaded (List Item)
+    | PouchItemChanged Item
 
 
 focusMaybeItemCmd maybeItem =
@@ -156,7 +160,7 @@ update message model =
         NOP ->
             ( model, Cmd.none )
 
-        PouchItemChangeReceived item ->
+        PouchItemChanged item ->
             ( { model
                 | itemLookup = ItemLookup.insertAll [ item ] model.itemLookup
                 , maybeDndItems = Nothing
@@ -167,7 +171,7 @@ update message model =
         AddItemClicked ->
             ( model, Cmd.batch [ newItemDoc () ] )
 
-        ReplaceItemsReceived items ->
+        PouchItemsLoaded items ->
             ( { model
                 | itemLookup = ItemLookup.fromList items
                 , maybeDndItems = Nothing

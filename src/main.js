@@ -35,7 +35,7 @@ const app = Elm.Main.init({
 const db = new PouchDb('items')
 
 db.allDocs({ include_docs: true }).then(({ rows }) =>
-  app.ports.replaceItems.send(
+  app.ports.pouchItemsLoaded.send(
     rows.map(r => {
       const doc = r.doc
       const id = doc._id
