@@ -12,7 +12,8 @@
     "nanoid": "^2.0.1",
     "pouchdb-browser": "^7.0.0",
     "ramda": "^0.26.1",
-    "tachyons": "^4.11.1"
+    "tachyons": "^4.11.1",
+    "aproba": "latest"
   },
   "devDependencies": {
     "elm-hot": "^1.0.1",

@@ -1,11 +1,12 @@
 // noinspection JSUnresolvedVariable
 import { getCached, setCache } from './cache-helpers'
-import { compose, defaultTo, mergeDeepRight } from 'ramda'
+import { compose, defaultTo, isEmpty, mergeDeepRight } from 'ramda'
 import './main.scss'
 import { Elm } from './Main.elm'
 import PouchDb from 'pouchdb-browser'
 import faker from 'faker'
 import * as nanoid from 'nanoid'
+import validate from 'aproba'
 
 const items = [
   { id: '1', title: 'One', pid: null, childIds: [] },
@@ -41,16 +42,20 @@ const db = new PouchDb('items')
 
 // db.allDocs({include_docs:true})
 
-app.ports.bulkItemDocs.subscribe(items => {
-  const docs = items.map(item => ({
-    _id: item.id,
-    _rev: item.rev,
-    ...item,
-  }))
-  console.log(docs)
-  // db.bulkDocs(docs)
-  //   .then(res => console.log('ports.bulkItemDocs res', res))
-  //   .catch(console.error)
+app.ports.bulkItemDocs.subscribe(function(items) {
+  validate('A', arguments)
+
+  console.log('items', items)
+  if (!isEmpty(items)) {
+    const docs = items.map(item => ({
+      _id: item.id,
+      _rev: item.rev,
+      ...item,
+    }))
+    db.bulkDocs(docs)
+      .then(res => console.log('ports.bulkItemDocs res', res))
+      .catch(console.error)
+  }
 })
 
 if (module.hot) {
