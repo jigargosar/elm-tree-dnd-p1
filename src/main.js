@@ -84,6 +84,17 @@ app.ports.toJsCache.subscribe(model => {
   setCache('elm-main', model)
 })
 
+app.ports.bulkItemDocs.subscribe(bulkItemDocs)
+
+// const debouncedBulkItemDocs = debounce(bulkItemDocs, 1000, {
+//   leading: false,
+//   trailing: true,
+// })
+//
+// app.ports.debouncedBulkItemDocs.subscribe(debouncedBulkItemDocs)
+
+/* HELPERS */
+
 function bulkItemDocs(items) {
   validate('A', arguments)
 
@@ -97,15 +108,6 @@ function bulkItemDocs(items) {
       .catch(console.error)
   }
 }
-
-app.ports.bulkItemDocs.subscribe(bulkItemDocs)
-
-// const debouncedBulkItemDocs = debounce(bulkItemDocs, 1000, {
-//   leading: false,
-//   trailing: true,
-// })
-//
-// app.ports.debouncedBulkItemDocs.subscribe(debouncedBulkItemDocs)
 
 function pouchDocToItem(doc) {
   const id = doc._id
