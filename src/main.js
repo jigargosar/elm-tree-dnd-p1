@@ -37,5 +37,7 @@ app.ports.bulkItemDocs.subscribe(items => {
     _rev: item.rev,
     ...item,
   }))
-  db.bulkDocs(docs).catch(console.error)
+  db.bulkDocs(docs)
+    .then(res => console.log('ports.bulkItemDocs res', res))
+    .catch(console.error)
 })
