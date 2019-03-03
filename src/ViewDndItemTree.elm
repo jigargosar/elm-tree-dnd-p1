@@ -1,4 +1,4 @@
-module ViewDndItemTree exposing (viewDndItemTree)
+module ViewDndItemTree exposing (getItemDomId, viewDndItemTree)
 
 import DnDList
 import Html exposing (Html, div)
@@ -57,6 +57,7 @@ viewItemWithTitle attrs title =
         [ t <| title ]
 
 
+getItemDomId : Item -> String
 getItemDomId item =
     "item-id-" ++ item.id
 

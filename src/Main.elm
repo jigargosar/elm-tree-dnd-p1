@@ -165,7 +165,7 @@ focusMaybeItemCmd maybeItem =
     maybeItem
         |> Maybe.map
             (\item ->
-                Browser.Dom.focus (getItemDomId item)
+                Browser.Dom.focus (ViewDndItemTree.getItemDomId item)
                     |> Task.attempt (FocusItemResultReceived item)
             )
         |> Maybe.withDefault Cmd.none
@@ -419,56 +419,3 @@ viewItemWithTitle attrs title =
             :: attrs
         )
         [ t <| title ]
-
-
-getItemDomId item =
-    "item-id-" ++ item.id
-
-
-viewDraggableItem : Maybe Int -> Int -> Item -> Html Msg
-viewDraggableItem maybeDraggedIndex index item =
-    case maybeDraggedIndex of
-        Nothing ->
-            let
-                itemDomId : String
-                itemDomId =
-                    getItemDomId item
-            in
-            div
-                [ id itemDomId
-                , classes [ flex, items_center, pa3, ba, br1, mv2, b__black_50 ]
-                , tabindex 0
-                , onFocus <| ItemReceivedFocus item
-                , onBlur <| ItemLostFocus item
-                ]
-                [ div [ classes [ flex_grow_1, flex, flex_column ] ]
-                    [ div [ classes [] ] [ t item.title ]
-                    , div [] (List.map (\cid -> div [] [ t cid ]) item.childIds)
-                    ]
-                , div (classes [ "move" ] :: system.dragEvents index itemDomId) [ t "|||" ]
-                ]
-
-        Just draggedIndex ->
-            if draggedIndex /= index then
-                viewItem (system.dropEvents index) item
-
-            else
-                viewItemWithTitle [] "[---------]"
-
-
-viewDraggedItem : DnDList.Draggable -> List Item -> Html.Html Msg
-viewDraggedItem draggable items =
-    let
-        maybeDraggedItem : Maybe Item
-        maybeDraggedItem =
-            system.draggedIndex draggable
-                |> Maybe.andThen (\index -> items |> List.drop index |> List.head)
-    in
-    case maybeDraggedItem of
-        Just item ->
-            div (system.draggedStyles draggable)
-                [ viewItem [ classes [ bg_white, o_80 ] ] item
-                ]
-
-        Nothing ->
-            Html.text ""
