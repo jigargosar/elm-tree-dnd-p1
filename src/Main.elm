@@ -338,9 +338,11 @@ update message model =
 
                     "ArrowRight" ->
                         model.maybeFocusedItemId
+                            |> Debug.log "maybeFocusedItemId"
                             |> Maybe.andThen
                                 (\id ->
                                     ItemLookup.getPrevSibAndParentOf id model.itemLookup
+                                        |> Debug.log "getPrevSibAndParentOf"
                                         |> Maybe.map
                                             (\( newParent, oldParent ) ->
                                                 let

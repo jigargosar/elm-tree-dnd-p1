@@ -47,7 +47,8 @@ getById id itemLookup =
 
 getParentOfId : String -> ItemLookup -> Maybe Item
 getParentOfId id itemLookup =
-    getById id itemLookup |> Maybe.andThen (\item -> getById item.id itemLookup)
+    getById id itemLookup
+        |> Maybe.andThen (.pid >> Maybe.andThen (\pid -> getById pid itemLookup))
 
 
 toArray : ItemLookup -> Array Item
@@ -121,6 +122,7 @@ getPrevSiblingOfId id itemLookup =
 getPrevSibAndParentOf : String -> ItemLookup -> Maybe ( Item, Item )
 getPrevSibAndParentOf id itemLookup =
     getParentOfId id itemLookup
+        |> Debug.log "getParentOfId"
         |> Maybe.andThen
             (\parent ->
                 parent.childIds
