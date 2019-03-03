@@ -24,7 +24,7 @@ port fromJs : (Int -> msg) -> Sub msg
 port pouchItemsLoaded : (List Item -> msg) -> Sub msg
 
 
-port pouchItemChange : (Item -> msg) -> Sub msg
+port pouchItemChanged : (Item -> msg) -> Sub msg
 
 
 port toJsCache : { items : List Item } -> Cmd msg
@@ -102,7 +102,7 @@ subscriptions model =
     Sub.batch
         [ fromJs FromJs
         , pouchItemsLoaded PouchItemsLoaded
-        , pouchItemChange PouchItemChanged
+        , pouchItemChanged PouchItemChanged
         , system.subscriptions model.draggable
         , onKeyDown <| Json.Decode.map KeyDownReceived keyEventDecoder
         , Browser.Events.onMouseUp <| Json.Decode.succeed MouseUpReceived

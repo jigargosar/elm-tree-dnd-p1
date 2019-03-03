@@ -34,20 +34,23 @@ const app = Elm.Main.init({
 
 const db = new PouchDb('items')
 
+function pouchDocToItem(doc) {
+  const id = doc._id
+  const rev = doc._rev
+  return { id, rev, ...omit(['_id', '_rev'])(doc) }
+}
+
 db.allDocs({ include_docs: true }).then(({ rows }) =>
-  app.ports.pouchItemsLoaded.send(
-    rows.map(r => {
-      const doc = r.doc
-      const id = doc._id
-      const rev = doc._rev
-      return { id, rev, ...doc }
-    }),
-  ),
+  app.ports.pouchItemsLoaded.send(rows.map(r => pouchDocToItem(r.doc))),
 )
 
 db.changes({ include_docs: true, live: true, since: 'now' })
   .on('change', change => {
     console.log(change)
+    if (change.deleted) {
+    } else {
+      app.ports.pouchItemChanged.send(pouchDocToItem(change.doc))
+    }
   })
   .on('error', error => console.error('item changes error', error))
 
