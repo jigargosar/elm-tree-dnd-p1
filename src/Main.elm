@@ -411,7 +411,7 @@ viewTree model =
         viewItem item =
             div []
                 [ viewItemTitle item
-                , viewChildren item
+                , div [ classes [ ml4 ] ] [ viewChildren item ]
                 ]
     in
     mRoot
