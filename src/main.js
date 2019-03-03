@@ -1,13 +1,6 @@
 // noinspection JSUnresolvedVariable
 import { getCached, setCache } from './cache-helpers'
-import {
-  always,
-  compose,
-  defaultTo,
-  isEmpty,
-  mergeDeepRight,
-  times,
-} from 'ramda'
+import { compose, defaultTo, isEmpty, mergeDeepRight, times } from 'ramda'
 import './main.scss'
 import { Elm } from './Main.elm'
 import PouchDb from 'pouchdb-browser'
@@ -31,7 +24,7 @@ function createNewItem() {
 const elmMainCached = compose(
   mergeDeepRight({ items }),
   defaultTo({}),
-  always(null),
+  // always(null),
   getCached,
 )('elm-main')
 

@@ -151,7 +151,9 @@ update message model =
             ( model, Cmd.none )
 
         ReplaceItemsReceived items ->
-            ( { model | itemLookup = ItemLookup.fromList items, maybeDndItems = Nothing }, Cmd.none )
+            ( { model | itemLookup = ItemLookup.fromList items, maybeDndItems = Nothing }
+            , Cmd.batch [ toJsCache { items = getItems model } ]
+            )
 
         FocusItemResultReceived item result ->
             case result of
