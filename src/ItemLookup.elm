@@ -85,17 +85,22 @@ getSiblingsOfId id itemLookup =
         |> Maybe.andThen (\parent -> getChildrenOfId parent.id itemLookup)
 
 
-getPrevSibling : String -> ItemLookup -> Maybe (List Item)
+getPrevSibling : String -> ItemLookup -> Maybe Item
 getPrevSibling id itemLookup =
     getParentById id itemLookup
         |> Maybe.andThen
             (\parent ->
                 let
-                    _ =
+                    maybePrevSibling : Maybe Item
+                    maybePrevSibling =
                         parent.childIds
-                            |> List.Extra.dropWhileRight (\cid -> cid /= id)
+                            |> List.reverse
+                            |> List.Extra.dropWhile (\cid -> cid /= id)
+                            |> List.Extra.dropWhile (\cid -> cid == id)
+                            |> List.head
+                            |> Maybe.andThen (\cid -> getById cid itemLookup)
                 in
-                Just []
+                maybePrevSibling
             )
 
 
