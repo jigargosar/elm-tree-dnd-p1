@@ -2,6 +2,7 @@ module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById,
 
 import Array exposing (Array)
 import Dict exposing (Dict)
+import List.Extra
 
 
 type alias Item =
@@ -86,7 +87,16 @@ getSiblingsOfId id itemLookup =
 
 getPrevSibling : String -> ItemLookup -> Maybe (List Item)
 getPrevSibling id itemLookup =
-    getSiblingsOfId id itemLookup
+    getParentById id itemLookup
+        |> Maybe.andThen
+            (\parent ->
+                let
+                    _ =
+                        parent.childIds
+                            |> List.Extra.dropWhileRight (\cid -> cid /= id)
+                in
+                Just []
+            )
 
 
 
