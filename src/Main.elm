@@ -115,12 +115,22 @@ type Msg
     | ItemReceivedFocus Item
     | ItemLostFocus Item
     | KeyDownReceived KeyEvent
+    | InitReceived
+
+
+focusMaybeItemCmd maybeItem =
+    maybeItem
+        |> Maybe.map (getItemDomId >> Browser.Dom.focus >> Task.attempt (\_ -> NOP))
+        |> Maybe.withDefault Cmd.none
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         NOP ->
+            ( model, Cmd.none )
+
+        InitReceived ->
             ( model, Cmd.none )
 
         FromJs int ->
@@ -140,8 +150,7 @@ update message model =
                 , toJsCache { items = getItems model }
                 , maybeIdx
                     |> Maybe.andThen (\idx -> getItems model |> List.drop idx |> List.head)
-                    |> Maybe.map (getItemDomId >> Browser.Dom.focus >> Task.attempt (\_ -> NOP))
-                    |> Maybe.withDefault Cmd.none
+                    |> focusMaybeItemCmd
                 , bulkItemDocs []
                 ]
             )
