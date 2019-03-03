@@ -7,6 +7,7 @@ import List.Extra
 
 type alias Item =
     { id : String
+    , rev : Maybe String
     , title : String
     , pid : Maybe String
     , childIds : List String

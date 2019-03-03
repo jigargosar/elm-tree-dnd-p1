@@ -20,6 +20,7 @@ const items = times(createNewItem)(3)
 function createNewItem() {
   return {
     id: 'i_' + nanoid(),
+    rev: null,
     title: faker.lorem.words(),
     pid: null,
     childIds: [],
@@ -33,19 +34,29 @@ const elmMainCached = compose(
   always(null),
   getCached,
 )('elm-main')
+
 const app = Elm.Main.init({
   node:
     document.querySelector('#main') || document.querySelector('body > *'),
   flags: elmMainCached,
 })
 
+const db = new PouchDb('items')
+
+db.allDocs({ include_docs: true }).then(({ rows }) =>
+  app.ports.replaceItems.send(
+    rows.map(r => {
+      const doc = r.doc
+      const id = doc._id
+      const rev = doc._rev
+      return { id, rev, ...doc }
+    }),
+  ),
+)
+
 app.ports.toJsCache.subscribe(model => {
   setCache('elm-main', model)
 })
-
-const db = new PouchDb('items')
-
-// db.allDocs({include_docs:true})
 
 function bulkItemDocs(items) {
   validate('A', arguments)

@@ -21,6 +21,9 @@ import V exposing (btn, cc, co, rr, t, tInt)
 port fromJs : (Int -> msg) -> Sub msg
 
 
+port replaceItems : (List Item -> msg) -> Sub msg
+
+
 port toJsCache : { items : List Item } -> Cmd msg
 
 
@@ -91,6 +94,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ fromJs FromJs
+        , replaceItems ReplaceItemsReceived
         , system.subscriptions model.draggable
         , onKeyDown <| Json.Decode.map KeyDownReceived keyEventDecoder
         , Browser.Events.onMouseUp <| Json.Decode.succeed MouseUpReceived
@@ -127,6 +131,7 @@ type Msg
     | KeyDownReceived KeyEvent
     | MouseUpReceived
     | InitReceived
+    | ReplaceItemsReceived (List Item)
 
 
 focusMaybeItemCmd maybeItem =
@@ -144,6 +149,9 @@ update message model =
     case message of
         NOP ->
             ( model, Cmd.none )
+
+        ReplaceItemsReceived items ->
+            ( { model | itemLookup = ItemLookup.fromList items, maybeDndItems = Nothing }, Cmd.none )
 
         FocusItemResultReceived item result ->
             case result of
