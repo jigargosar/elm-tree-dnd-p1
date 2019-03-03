@@ -1,4 +1,4 @@
-module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getRootItems, toArray, toList)
+module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getRootItems, insertAll, toArray, toList)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -23,6 +23,11 @@ fromList itemList =
     itemList
         |> List.map (\item -> ( item.id, item ))
         |> Dict.fromList
+
+
+insertAll : List Item -> ItemLookup -> ItemLookup
+insertAll items itemLookup =
+    List.foldl (\item -> Dict.insert item.id item) itemLookup items
 
 
 toList : ItemLookup -> List Item

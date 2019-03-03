@@ -159,17 +159,17 @@ update message model =
         DndMsgReceived msg ->
             let
                 ( draggable, items ) =
-                    system.update msg model.draggable (getItems model)
+                    system.update msg model.draggable (getRootItems model)
 
                 maybeIdx =
                     system.draggedIndex model.draggable
             in
-            ( { model | draggable = draggable, itemLookup = ItemLookup.fromList items }
+            ( { model | draggable = draggable, itemLookup = ItemLookup.insertAll items model.itemLookup }
             , Cmd.batch
                 [ system.commands model.draggable
                 , toJsCache { items = getItems model }
                 , maybeIdx
-                    |> Maybe.andThen (\idx -> getItems model |> List.drop idx |> List.head)
+                    |> Maybe.andThen (\idx -> getRootItems model |> List.drop idx |> List.head)
                     |> focusMaybeItemCmd
                 , bulkItemDocs []
                 ]
@@ -250,9 +250,9 @@ view model =
             [ classes [] ]
             (List.indexedMap
                 (\idx item -> ( getItemKey item, viewDraggableItem maybeDraggedIndex idx item ))
-                (getItems model)
+                (getRootItems model)
             )
-        , viewDraggedItem model.draggable (getItems model)
+        , viewDraggedItem model.draggable (getRootItems model)
         ]
 
 
