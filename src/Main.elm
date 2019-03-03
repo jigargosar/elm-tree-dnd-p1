@@ -370,7 +370,7 @@ onNestFocused model =
         |> Maybe.withDefault ( model, Cmd.none )
 
 
-onUnNestFocused model =
+onUnnestFocused model =
     let
         updateParents : String -> Item -> Item -> List Item
         updateParents id oldParent newParent =
