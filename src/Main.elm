@@ -182,10 +182,16 @@ cacheNewModel model =
     toJsCache { items = getItems model, maybeFocusedItemId = model.maybeFocusedItemId }
 
 
-refocusItemCmd model =
+refocusItemOrFirstCmd model =
     model.maybeFocusedItemId
         |> Maybe.andThen (\id -> getItemById id model)
         |> Maybe.Extra.orElseLazy (\_ -> getRootItemsOrEmpty model |> List.head)
+        |> focusMaybeItemCmd
+
+
+refocusItemCmd model =
+    model.maybeFocusedItemId
+        |> Maybe.andThen (\id -> getItemById id model)
         |> focusMaybeItemCmd
 
 
@@ -202,9 +208,13 @@ update message model =
                         | itemLookup = ItemLookup.insertAll [ item ] model.itemLookup
                         , maybeDndItems = Nothing
                     }
+
+                _ =
+                    model.maybeFocusedItemId
+                        |> Debug.log "maybeFocusedItemId"
             in
             ( newModel
-            , cacheNewModel newModel
+            , Cmd.batch [ cacheNewModel newModel, refocusItemCmd newModel ]
             )
 
         AddItemClicked ->
@@ -230,7 +240,7 @@ update message model =
             ( newModel
             , Cmd.batch
                 [ cacheNewModel newModel
-                , refocusItemCmd newModel
+                , refocusItemOrFirstCmd newModel
                 ]
             )
 
@@ -249,7 +259,7 @@ update message model =
         InitReceived ->
             ( model
             , Cmd.batch
-                [ refocusItemCmd model
+                [ refocusItemOrFirstCmd model
                 ]
             )
 
