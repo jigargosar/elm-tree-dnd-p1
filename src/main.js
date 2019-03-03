@@ -38,23 +38,27 @@ function createNewItem() {
 
 /* PRE ELM APP INIT */
 
+function focusOffset(event, offset) {
+  const focusable = Array.from(
+    document.querySelectorAll('[data-is-focusable=true]'),
+  )
+  const idx = focusable.indexOf(event.target)
+  R.compose(
+    R.unless(R.isNil)(R.invoker(0, 'focus')),
+    R.defaultTo(focusable[0]),
+    R.nth(idx + offset),
+  )(focusable).focus()
+}
+
 window.addEventListener('keydown', function(event) {
   const isFocusable = !!event.target.dataset.isFocusable
   console.log('isFocusable', isFocusable)
   if (isFocusable) {
-    const focusable = Array.from(
-      document.querySelectorAll('[data-is-focusable=true]'),
-    )
-    const idx = focusable.indexOf(event.target)
-
     // console.debug(idx, focusable)
     if (event.key === 'ArrowUp') {
-      R.nth(idx - 1)(focusable).focus()
+      focusOffset(event, -1)
     } else if (event.key === 'ArrowDown') {
-      R.compose(
-        R.defaultTo(focusable[0]),
-        R.nth(idx + 1),
-      )(focusable).focus()
+      focusOffset(event, 1)
     }
   }
 })
