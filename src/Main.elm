@@ -107,8 +107,8 @@ keyEventDecoder : Decoder KeyEvent
 keyEventDecoder =
     Json.Decode.map3 KeyEvent
         (Json.Decode.at [ "key" ] Json.Decode.string)
-        (Json.Decode.at [ "ctrl" ] Json.Decode.bool)
-        (Json.Decode.at [ "meta" ] Json.Decode.bool)
+        (Json.Decode.at [ "ctrlKey" ] Json.Decode.bool)
+        (Json.Decode.at [ "metaKey" ] Json.Decode.bool)
 
 
 subscriptions : Model -> Sub Msg
@@ -335,10 +335,10 @@ update message model =
             if keyEvent.meta then
                 case keyEvent.key of
                     "ArrowLeft" ->
-                        updateFocusedItemTreeCursor ItemTreeCursor.unNest
+                        ( model, Cmd.none )
 
                     "ArrowRight" ->
-                        updateFocusedItemTreeCursor ItemTreeCursor.nest
+                        ( model, Cmd.none )
 
                     _ ->
                         ( model, Cmd.none )
