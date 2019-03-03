@@ -189,11 +189,15 @@ update message model =
             ( model, Cmd.none )
 
         PouchItemChanged item ->
-            ( { model
-                | itemLookup = ItemLookup.insertAll [ item ] model.itemLookup
-                , maybeDndItems = Nothing
-              }
-            , Cmd.none
+            let
+                newModel =
+                    { model
+                        | itemLookup = ItemLookup.insertAll [ item ] model.itemLookup
+                        , maybeDndItems = Nothing
+                    }
+            in
+            ( newModel
+            , cacheNewModel newModel
             )
 
         AddItemClicked ->
@@ -274,7 +278,6 @@ update message model =
                         ( newModel
                         , Cmd.batch
                             [ bulkItemDocs updatedItems
-                            , cacheNewModel newModel
                             ]
                         )
 
@@ -334,29 +337,24 @@ update message model =
                         ( model, Cmd.none )
 
                     "ArrowRight" ->
-                        let
-                            maybeItem =
-                                model.maybeFocusedItemId
-                                    |> Maybe.andThen (\id -> ItemLookup.getById id model.itemLookup)
+                        model.maybeFocusedItemId
+                            |> Maybe.andThen (\id -> ItemLookup.getPrevSibAndParentOf id model.itemLookup)
+                            |> Maybe.map
+                                (\( newParent, oldParent ) ->
+                                    let
+                                        i1 =
+                                            { oldParent | childIds = List.filter ((/=) id) oldParent.childIds }
 
-                            maybePrevSibling =
-                                model.maybeFocusedItemId
-                                    |> Maybe.andThen (\id -> ItemLookup.getPrevSiblingOfId id model.itemLookup)
-                                    |> Debug.log "getPrevSibling"
-
-                            maybeParent =
-                                model.maybeFocusedItemId
-                                    |> Maybe.andThen (\id -> ItemLookup.getParentOfId id model.itemLookup)
-
-                            _ =
-                                case maybeParent of
-                                    Just parent ->
-                                        1
-
-                                    Nothing ->
-                                        2
-                        in
-                        ( model, Cmd.none )
+                                        i2 =
+                                            { newParent | childIds = id :: newParent.childIds }
+                                    in
+                                    [ i1, i2 ]
+                                )
+                            |> Maybe.map
+                                (\uItems ->
+                                    ( model, bulkItemDocs uItems )
+                                )
+                            |> Maybe.withDefault ( model, Cmd.none )
 
                     _ ->
                         ( model, Cmd.none )
