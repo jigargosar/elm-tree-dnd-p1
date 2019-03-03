@@ -30,7 +30,11 @@ port toJsCache : { items : List Item } -> Cmd msg
 port bulkItemDocs : List Item -> Cmd msg
 
 
-port debouncedBulkItemDocs : List Item -> Cmd msg
+port newItemDoc : () -> Cmd msg
+
+
+
+--port debouncedBulkItemDocs : List Item -> Cmd msg
 
 
 main =
@@ -123,6 +127,7 @@ system =
 
 type Msg
     = NOP
+    | AddItemClicked
     | FromJs Int
     | FocusItemResultReceived Item (Result Browser.Dom.Error ())
     | DndMsgReceived DnDList.Msg
@@ -149,6 +154,9 @@ update message model =
     case message of
         NOP ->
             ( model, Cmd.none )
+
+        AddItemClicked ->
+            ( model, Cmd.batch [ newItemDoc () ] )
 
         ReplaceItemsReceived items ->
             ( { model | itemLookup = ItemLookup.fromList items, maybeDndItems = Nothing }
