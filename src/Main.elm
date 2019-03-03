@@ -343,10 +343,11 @@ update message model =
             ( newModel, Cmd.batch [ cacheNewModel newModel ] )
 
         KeyDownReceived keyEvent ->
-            let
-                _ =
-                    Debug.log "KeyDownReceived" keyEvent
-            in
+            {- let
+                   _ =
+                       Debug.log "KeyDownReceived" keyEvent
+               in
+            -}
             if keyEvent.meta then
                 case keyEvent.key of
                     "ArrowLeft" ->
