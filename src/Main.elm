@@ -385,10 +385,9 @@ onUnnestFocused model =
         |> Maybe.map
             (\( id, oldParent, newParent ) ->
                 updateParents id oldParent newParent
-            )
-        |> Maybe.map
-            (\uItems ->
-                ( model, bulkItemDocs uItems )
+                    |> (\updatedItems ->
+                            ( model, bulkItemDocs updatedItems )
+                       )
             )
         |> Maybe.withDefault ( model, Cmd.none )
 
