@@ -144,10 +144,10 @@ update message model =
         FocusItemResultReceived item result ->
             case result of
                 Err error ->
-                    let
-                        _ =
-                            Debug.log "FocusItemResultReceived Err" ( item, error )
-                    in
+                    --                    let
+                    --                        _ =
+                    --                            Debug.log "FocusItemResultReceived Err" ( item, error )
+                    --                    in
                     ( model, Cmd.none )
 
                 Ok _ ->
@@ -166,6 +166,7 @@ update message model =
 
                 maybeIdx =
                     system.draggedIndex model.draggable
+                        |> Debug.log "system.draggedIndex"
 
                 newRootItems : List Item
                 newRootItems =
