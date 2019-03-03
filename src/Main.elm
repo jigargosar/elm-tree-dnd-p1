@@ -6,7 +6,7 @@ import Browser.Dom
 import Browser.Events exposing (onKeyDown)
 import DnDList
 import Html exposing (Html, button, div)
-import Html.Attributes exposing (tabindex)
+import Html.Attributes exposing (attribute, property, tabindex)
 import Html.Events exposing (onBlur, onClick, onFocus)
 import ItemLookup exposing (Item, ItemLookup)
 import Json.Decode exposing (Decoder)
@@ -461,6 +461,9 @@ viewTree model =
                 , Html.Attributes.id <| getItemDomId item
                 , onFocus <| ItemFocused item
                 , onBlur <| ItemLostFocus item
+                , attribute "data-is-focusable" "true"
+
+                --                , property "data-is-focusable" "true"
                 ]
                 [ t item.title ]
 
