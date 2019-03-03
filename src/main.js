@@ -2,6 +2,7 @@
 import { getCached, setCache } from './cache-helpers'
 import {
   compose,
+  default as R,
   defaultTo,
   insert,
   isEmpty,
@@ -36,6 +37,27 @@ function createNewItem() {
 }
 
 /* PRE ELM APP INIT */
+
+window.addEventListener('keydown', function(event) {
+  const isFocusable = !!event.target.dataset.isFocusable
+  console.log('isFocusable', isFocusable)
+  if (isFocusable) {
+    const focusable = Array.from(
+      document.querySelectorAll('[data-is-focusable=true]'),
+    )
+    const idx = focusable.indexOf(event.target)
+
+    console.log(idx, focusable)
+    if (event.key === 'ArrowUp') {
+      R.at(idx - 1)(focusable).focus()
+    } else if (event.key === 'ArrowDown') {
+      R.compose(
+        R.defaultTo(focusable[0]),
+        R.at(idx + 1),
+      )(focusable).focus()
+    }
+  }
+})
 
 /* ELM APP */
 
