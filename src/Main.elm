@@ -57,7 +57,7 @@ type alias Model =
 
 
 type alias Flags =
-    { items : List Item }
+    { items : List Item, maybeFocusedItemId : Maybe String }
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -65,7 +65,7 @@ init flags =
     update InitReceived
         { itemLookup = ItemLookup.fromList flags.items
         , draggable = system.draggable
-        , maybeFocusedItemId = Nothing
+        , maybeFocusedItemId = flags.maybeFocusedItemId
         , maybeDndItems = Nothing
         }
 
@@ -212,7 +212,7 @@ update message model =
                     ( model, Cmd.none )
 
         InitReceived ->
-            ( model, Cmd.batch [ getRootItems model |> List.head |> focusMaybeItemCmd ] )
+            ( model, Cmd.batch [ model.maybeFocusedItemId |> focusMaybeItemCmd ] )
 
         FromJs int ->
             ( model, Cmd.none )
