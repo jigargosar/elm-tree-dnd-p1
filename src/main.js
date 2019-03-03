@@ -35,12 +35,7 @@ function createNewItem() {
   }
 }
 
-const elmMainCached = compose(
-  mergeDeepRight({ items: [], maybeFocusedItemId: null }),
-  defaultTo({}),
-  // always(null),
-  getCached,
-)('elm-main')
+const elmMainCached = getMainCache()
 
 const app = Elm.Main.init({
   node:
@@ -49,19 +44,6 @@ const app = Elm.Main.init({
 })
 
 const db = new PouchDb('items')
-
-function pouchDocToItem(doc) {
-  const id = doc._id
-  const rev = doc._rev
-  return { id, rev, ...omit(['_id', '_rev'])(doc) }
-}
-function itemToPouchDoc(item) {
-  return {
-    _id: item.id,
-    _rev: item.rev,
-    ...omit(['id', 'rev'])(item),
-  }
-}
 
 db.allDocs({ include_docs: true }).then(({ rows }) => {
   if (rows.length === 0) {
@@ -124,6 +106,28 @@ app.ports.bulkItemDocs.subscribe(bulkItemDocs)
 // })
 //
 // app.ports.debouncedBulkItemDocs.subscribe(debouncedBulkItemDocs)
+
+function pouchDocToItem(doc) {
+  const id = doc._id
+  const rev = doc._rev
+  return { id, rev, ...omit(['_id', '_rev'])(doc) }
+}
+function itemToPouchDoc(item) {
+  return {
+    _id: item.id,
+    _rev: item.rev,
+    ...omit(['id', 'rev'])(item),
+  }
+}
+
+function getMainCache() {
+  return compose(
+    mergeDeepRight({ items: [], maybeFocusedItemId: null }),
+    defaultTo({}),
+    // always(null),
+    getCached,
+  )('elm-main')
+}
 
 if (module.hot) {
   module.hot.accept(() => window.location.reload(true))
