@@ -63,7 +63,7 @@ getItems model =
 
 
 getRootItems model =
-    model.itemLookup |> ItemLookup.getRootItems |> Debug.log "getRootItems"
+    model.itemLookup |> ItemLookup.getRootItems
 
 
 
@@ -179,6 +179,7 @@ update message model =
                                     Just { item | rootIdx = idx }
                             )
                         |> List.filterMap identity
+                        |> Debug.log "newRootItems"
             in
             ( { model | draggable = draggable, itemLookup = ItemLookup.insertAll newRootItems model.itemLookup }
             , Cmd.batch
