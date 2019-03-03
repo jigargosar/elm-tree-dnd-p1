@@ -371,7 +371,7 @@ onNestFocused model =
         updateParents : String -> Item -> Item -> List Item
         updateParents id oldParent newParent =
             [ { oldParent | childIds = List.filter ((/=) id) oldParent.childIds }
-            , { newParent | childIds = id :: newParent.childIds }
+            , { newParent | childIds = newParent.childIds ++ [ id ] }
             ]
     in
     model.maybeFocusedItemId
