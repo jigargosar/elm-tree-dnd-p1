@@ -87,6 +87,10 @@ getDisplayRootItems model =
             getRootItems model
 
 
+getItemById id model =
+    ItemLookup.getById id model.itemLookup
+
+
 
 -- SUBSCRIPTIONS
 
@@ -212,7 +216,13 @@ update message model =
                     ( model, Cmd.none )
 
         InitReceived ->
-            ( model, Cmd.batch [ model.maybeFocusedItemId |> focusMaybeItemCmd ] )
+            ( model
+            , Cmd.batch
+                [ model.maybeFocusedItemId
+                    |> Maybe.andThen (\id -> getItemById id model)
+                    |> focusMaybeItemCmd
+                ]
+            )
 
         FromJs int ->
             ( model, Cmd.none )
