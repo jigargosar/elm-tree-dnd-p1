@@ -60,7 +60,7 @@ getItems model =
 
 
 getRootItems model =
-    model.itemLookup |> ItemLookup.getRootItems
+    model.itemLookup |> ItemLookup.getRootItems |> Debug.log "getRootItems"
 
 
 

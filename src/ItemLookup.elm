@@ -71,7 +71,13 @@ getAncestorIdsHelp ancestorIds id itemLookup =
 
 getRootItems : ItemLookup -> List Item
 getRootItems itemLookup =
-    toList itemLookup |> List.filterMap (\item -> item.pid |> Maybe.map (\_ -> item))
+    toList itemLookup
+        |> List.filter
+            (\item ->
+                item.pid
+                    |> Maybe.map (\_ -> False)
+                    |> Maybe.withDefault True
+            )
 
 
 getChildrenOfId : String -> ItemLookup -> Maybe (List Item)
