@@ -437,7 +437,10 @@ viewDraggableItem maybeDraggedIndex index item =
                 , onFocus <| ItemReceivedFocus item
                 , onBlur <| ItemLostFocus item
                 ]
-                [ div [ classes [ flex_grow_1 ] ] [ t item.title ]
+                [ div [ classes [ flex_grow_1, flex, flex_column ] ]
+                    [ div [ classes [] ] [ t item.title ]
+                    , div [] (List.map (\cid -> div [] [ t cid ]) item.childIds)
+                    ]
                 , div (classes [ "move" ] :: system.dragEvents index itemDomId) [ t "|||" ]
                 ]
 
