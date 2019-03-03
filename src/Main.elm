@@ -394,6 +394,10 @@ viewTree model =
             ItemLookup.getChildrenOfId item.id model.itemLookup
                 |> Maybe.withDefault []
 
+        --        getChildrenOfId : String -> List Item
+        --        getChildrenOfId id =
+        --            ItemLookup.getChildrenOfId id model.itemLookup
+        --                |> Maybe.withDefault []
         viewItemTitle item =
             div [ classes [ pa3, ba, b__black_50, br1 ] ] [ t item.title ]
 
@@ -402,7 +406,13 @@ viewTree model =
             div [ classes [ mv2, pa3, ba, b__black_50, br1 ] ] [ t iid ]
 
         viewChildren item =
-            div [] (List.map viewId item.childIds)
+            div [] (List.map viewItem (getChildren item))
+
+        viewItem item =
+            div []
+                [ viewItemTitle item
+                , viewChildren item
+                ]
     in
     mRoot
         |> Maybe.map viewChildren
