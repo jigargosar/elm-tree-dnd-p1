@@ -338,17 +338,20 @@ update message model =
 
                     "ArrowRight" ->
                         model.maybeFocusedItemId
-                            |> Maybe.andThen (\id -> ItemLookup.getPrevSibAndParentOf id model.itemLookup)
-                            |> Maybe.map
-                                (\( newParent, oldParent ) ->
-                                    let
-                                        i1 =
-                                            { oldParent | childIds = List.filter ((/=) id) oldParent.childIds }
+                            |> Maybe.andThen
+                                (\id ->
+                                    ItemLookup.getPrevSibAndParentOf id model.itemLookup
+                                        |> Maybe.map
+                                            (\( newParent, oldParent ) ->
+                                                let
+                                                    i1 =
+                                                        { oldParent | childIds = List.filter ((/=) id) oldParent.childIds }
 
-                                        i2 =
-                                            { newParent | childIds = id :: newParent.childIds }
-                                    in
-                                    [ i1, i2 ]
+                                                    i2 =
+                                                        { newParent | childIds = id :: newParent.childIds }
+                                                in
+                                                [ i1, i2 ]
+                                            )
                                 )
                             |> Maybe.map
                                 (\uItems ->
