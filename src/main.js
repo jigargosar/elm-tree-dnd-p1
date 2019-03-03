@@ -5,9 +5,9 @@ import './main.scss'
 import { Elm } from './Main.elm'
 
 const items = [
-  { id: '1', title: 'One', pid: null },
-  { id: '2', title: 'Two', pid: null },
-  { id: '3', title: 'Three', pid: null },
+  { id: '1', title: 'One', pid: null, childIds: [] },
+  { id: '2', title: 'Two', pid: null, childIds: [] },
+  { id: '3', title: 'Three', pid: null, childIds: [] },
   //
 ]
 const elmMainCached = compose(
