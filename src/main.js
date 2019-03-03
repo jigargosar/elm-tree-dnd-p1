@@ -15,6 +15,7 @@ import validate from 'aproba'
 import nanoid from 'nanoid'
 import faker from 'faker'
 
+/* ITEM */
 const rootItemId = 'i_root_item_id'
 const initialRootItem = {
   id: rootItemId,
@@ -33,6 +34,10 @@ function createNewItem() {
     childIds: [],
   }
 }
+
+/* PRE ELM APP INIT */
+
+/* ELM APP */
 
 const app = Elm.Main.init({
   node:
