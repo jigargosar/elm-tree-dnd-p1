@@ -374,22 +374,6 @@ update message model =
 
 view : Model -> Html Msg
 view model =
-    let
-        maybeDraggedIndex : Maybe Int
-        maybeDraggedIndex =
-            system.draggedIndex model.draggable
-
-        getItemKey item =
-            case system.draggedIndex model.draggable of
-                Just _ ->
-                    "dragging-" ++ item.id
-
-                Nothing ->
-                    item.id
-
-        displayRootItems =
-            getDisplayRootItems model
-    in
     co [ sans_serif, measure ]
         [ div []
             [ button [ onClick AddItemClicked ] [ t "add new" ]
@@ -406,16 +390,3 @@ viewDndItemTree model =
     ViewDndItemTree.viewDndItemTree { system = system, onFocusMsg = ItemReceivedFocus, onBlurMsg = ItemLostFocus }
         displayRootItems
         model.draggable
-
-
-viewItem attrs item =
-    viewItemWithTitle attrs item.title
-
-
-viewItemWithTitle attrs title =
-    div
-        (classes [ pa3, ba, br1, mv2, b__black_50 ]
-            :: tabindex 1
-            :: attrs
-        )
-        [ t <| title ]
