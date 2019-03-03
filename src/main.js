@@ -20,7 +20,7 @@ import validate from 'aproba'
 // }
 
 const elmMainCached = compose(
-  mergeDeepRight({ items: [] }),
+  mergeDeepRight({ items: [], maybeFocusedItemId: null }),
   defaultTo({}),
   // always(null),
   getCached,
