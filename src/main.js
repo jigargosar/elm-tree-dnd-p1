@@ -1,28 +1,26 @@
 // noinspection JSUnresolvedVariable
 import { getCached, setCache } from './cache-helpers'
-import { compose, defaultTo, isEmpty, mergeDeepRight, times } from 'ramda'
+import { compose, defaultTo, isEmpty, mergeDeepRight, omit } from 'ramda'
 import './main.scss'
 import { Elm } from './Main.elm'
 import PouchDb from 'pouchdb-browser'
-import faker from 'faker'
-import nanoid from 'nanoid'
 import validate from 'aproba'
 
-const items = times(createNewItem)(3)
-
-function createNewItem() {
-  return {
-    id: 'i_' + nanoid(),
-    rev: null,
-    title: faker.lorem.words(),
-    pid: null,
-    childIds: [],
-    rootIdx: 0,
-  }
-}
+// const items = times(createNewItem)(3)
+//
+// function createNewItem() {
+//   return {
+//     id: 'i_' + nanoid(),
+//     rev: null,
+//     title: faker.lorem.words(),
+//     pid: null,
+//     childIds: [],
+//     rootIdx: -1,
+//   }
+// }
 
 const elmMainCached = compose(
-  mergeDeepRight({ items }),
+  mergeDeepRight({ items: [] }),
   defaultTo({}),
   // always(null),
   getCached,
@@ -59,8 +57,9 @@ function bulkItemDocs(items) {
     const docs = items.map(item => ({
       _id: item.id,
       _rev: item.rev,
-      ...item,
+      ...omit(['id', 'rev'])(item),
     }))
+    console.log('bulkItemDocs: docs', docs)
     db.bulkDocs(docs)
       .then(res => console.log('ports.bulkItemDocs res', res))
       .catch(console.error)
