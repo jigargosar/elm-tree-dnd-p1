@@ -1,4 +1,4 @@
-module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenById, getRootItems, toArray, toList)
+module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getRootItems, toArray, toList)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -72,22 +72,16 @@ getRootItems itemLookup =
     toList itemLookup |> List.filterMap (\item -> item.pid |> Maybe.map (\_ -> item))
 
 
-getChildrenById : String -> ItemLookup -> List Item
-getChildrenById id itemLookup =
-    toList itemLookup
-        |> List.filterMap
-            (\item ->
-                item.pid
-                    |> Maybe.andThen
-                        (\parentId ->
-                            if id == parentId then
-                                Just item
-
-                            else
-                                Nothing
-                        )
-            )
+getChildrenOfId : String -> ItemLookup -> List Item
+getChildrenOfId parentId itemLookup =
+    toList itemLookup |> List.filter (\parent -> parentId == parent.id)
 
 
 
+--getPrevSibling: String -> ItemLookup -> Maybe (List Item)
+--getPrevSibling id itemLookup =
+--    getParentById id itemLookup
+--        |> Maybe.map(\parent -> getChildrenById parent.id itemLookup)
+--
+--
 --        |> Array.

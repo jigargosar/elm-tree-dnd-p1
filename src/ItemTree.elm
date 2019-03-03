@@ -1,7 +1,7 @@
 module ItemTree exposing (ItemForest, ItemTree, getIdxForestTupleForItemId, itemToTree, toForest)
 
 import Array exposing (Array)
-import ItemLookup exposing (Item, ItemLookup, getChildrenById, getRootItems)
+import ItemLookup exposing (Item, ItemLookup, getChildrenOfId, getRootItems)
 
 
 type alias ItemForest =
@@ -19,7 +19,7 @@ toForest itemTree =
 
 itemToTree : ItemLookup -> Item -> ItemTree
 itemToTree itemTree item =
-    Tree item (getChildrenById item.id itemTree |> List.map (itemToTree itemTree) |> Array.fromList)
+    Tree item (getChildrenOfId item.id itemTree |> List.map (itemToTree itemTree) |> Array.fromList)
 
 
 getIdxForestTupleForItemId : String -> ItemForest -> Maybe ( Int, ItemForest )
