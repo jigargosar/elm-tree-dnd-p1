@@ -1,6 +1,5 @@
 port module Main exposing (main)
 
-import Array exposing (Array)
 import Browser
 import Browser.Dom
 import Browser.Events exposing (onKeyDown)
@@ -16,6 +15,7 @@ import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
 import Task
 import V exposing (btn, cc, co, rr, t, tInt)
+import ViewDndItemTree
 
 
 port fromJs : (Int -> msg) -> Sub msg
@@ -394,36 +394,18 @@ view model =
         [ div []
             [ button [ onClick AddItemClicked ] [ t "add new" ]
             ]
-        , viewDndItemTree system model
+        , viewDndItemTree model
         ]
 
 
-viewDndItemTree system_ model =
+viewDndItemTree model =
     let
-        maybeDraggedIndex : Maybe Int
-        maybeDraggedIndex =
-            system_.draggedIndex model.draggable
-
-        getItemKey item =
-            case system_.draggedIndex model.draggable of
-                Just _ ->
-                    "dragging-" ++ item.id
-
-                Nothing ->
-                    item.id
-
         displayRootItems =
             getDisplayRootItems model
     in
-    div []
-        [ Html.Keyed.node "div"
-            [ classes [] ]
-            (List.indexedMap
-                (\idx item -> ( getItemKey item, viewDraggableItem maybeDraggedIndex idx item ))
-                displayRootItems
-            )
-        , viewDraggedItem model.draggable displayRootItems
-        ]
+    ViewDndItemTree.viewDndItemTree { system = system, onFocusMsg = ItemReceivedFocus, onBlurMsg = ItemLostFocus }
+        displayRootItems
+        model.draggable
 
 
 viewItem attrs item =
