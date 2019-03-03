@@ -369,6 +369,35 @@ update message model =
 
 
 moveFocusedBy offset model =
+    let
+        updateIdx parent focusedItemIdx =
+            let
+                newIdx =
+                    focusedItemIdx + offset
+
+                --                rolledNewIdx =
+                --                    if newIdx >= List.length parent.childIds then
+                --                        0
+                --
+                --                    else if newIdx < 0 then
+                --                        List.length parent.childIds - 1
+                --
+                --                    else
+                --                        newIdx
+                maybeNewIdx =
+                    if newIdx >= List.length parent.childIds || newIdx < 0 then
+                        Nothing
+
+                    else
+                        Just newIdx
+            in
+            maybeNewIdx
+                |> Maybe.map
+                    (\finalIdx ->
+                        List.Extra.swapAt focusedItemIdx finalIdx parent.childIds
+                            |> (\newChildIds -> { parent | childIds = newChildIds })
+                    )
+    in
     model.maybeFocusedItemId
         |> Maybe.andThen
             (\id ->
@@ -377,39 +406,7 @@ moveFocusedBy offset model =
                         (\parent ->
                             parent.childIds
                                 |> List.Extra.findIndex ((==) id)
-                                |> Maybe.andThen
-                                    (\idx ->
-                                        let
-                                            newIdx =
-                                                idx + offset
-
-                                            rolledNewIdx =
-                                                if newIdx >= List.length parent.childIds then
-                                                    0
-
-                                                else if newIdx < 0 then
-                                                    List.length parent.childIds - 1
-
-                                                else
-                                                    newIdx
-
-                                            maybeNewIdx =
-                                                if newIdx >= List.length parent.childIds then
-                                                    Nothing
-
-                                                else if newIdx < 0 then
-                                                    Nothing
-
-                                                else
-                                                    Just newIdx
-                                        in
-                                        maybeNewIdx
-                                            |> Maybe.map
-                                                (\finalIdx ->
-                                                    List.Extra.swapAt idx finalIdx parent.childIds
-                                                        |> (\newChildIds -> { parent | childIds = newChildIds })
-                                                )
-                                    )
+                                |> Maybe.andThen (updateIdx parent)
                         )
             )
         |> Maybe.map (\updatedItem -> ( model, bulkItemDocs [ updatedItem ] ))
