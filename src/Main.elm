@@ -377,7 +377,7 @@ moveFocusedBy offset model =
                         (\parent ->
                             parent.childIds
                                 |> List.Extra.findIndex ((==) id)
-                                |> Maybe.map
+                                |> Maybe.andThen
                                     (\idx ->
                                         let
                                             newIdx =
@@ -404,7 +404,11 @@ moveFocusedBy offset model =
                                                     Just newIdx
                                         in
                                         maybeNewIdx
-                                            |> Maybe.map (\finalIdx -> List.Extra.swapAt idx finalIdx parent.childIds)
+                                            |> Maybe.map
+                                                (\finalIdx ->
+                                                    List.Extra.swapAt idx finalIdx parent.childIds
+                                                        |> (\newChildIds -> { parent | childIds = newChildIds })
+                                                )
                                     )
                         )
             )
