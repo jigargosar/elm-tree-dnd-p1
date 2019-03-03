@@ -1,5 +1,6 @@
 port module Main exposing (main)
 
+import Array.Extra
 import Browser
 import Browser.Dom
 import Browser.Events exposing (onKeyDown)
@@ -9,6 +10,7 @@ import Html.Attributes exposing (tabindex)
 import Html.Events exposing (onBlur, onClick, onFocus)
 import ItemLookup exposing (Item, ItemLookup)
 import Json.Decode exposing (Decoder)
+import List.Extra
 import Maybe.Extra
 import Tachyons exposing (classes)
 import Tachyons.Classes exposing (..)
@@ -334,7 +336,7 @@ update message model =
             if keyEvent.meta then
                 case keyEvent.key of
                     "ArrowLeft" ->
-                        ( model, Cmd.none )
+                        onUnnestFocused model
 
                     "ArrowRight" ->
                         onNestFocused model
@@ -372,19 +374,30 @@ onNestFocused model =
 onUnnestFocused model =
     let
         updateParents : String -> Item -> Item -> List Item
-        updateParents id oldParent newParent =
-            [ { oldParent | childIds = List.filter ((/=) id) oldParent.childIds }
-            , { newParent | childIds = id :: newParent.childIds }
-            ]
+        updateParents id parent grandParent =
+            grandParent.childIds
+                |> List.Extra.findIndex ((==) parent.id)
+                |> Maybe.map
+                    (\parentIdx ->
+                        [ { parent | childIds = List.filter ((/=) id) parent.childIds }
+                        , { grandParent
+                            | childIds =
+                                List.Extra.splitAt parentIdx grandParent.childIds
+                                    |> (\( pre, post ) -> pre ++ [ id ] ++ post)
+                          }
+                        ]
+                    )
+                |> Maybe.withDefault []
     in
     model.maybeFocusedItemId
         |> Maybe.andThen
             (\id ->
-                ItemLookup.getParentAndPrevPrevSibOf id model.itemLookup
+                ItemLookup.getParentAndGrandParentOf id model.itemLookup
             )
+        |> Debug.log "getParentAndGrandParentOf"
         |> Maybe.map
-            (\( id, oldParent, newParent ) ->
-                updateParents id oldParent newParent
+            (\( id, parent, grandParent ) ->
+                updateParents id parent grandParent
                     |> (\updatedItems ->
                             ( model, bulkItemDocs updatedItems )
                        )
