@@ -91,6 +91,7 @@ subscriptions model =
         [ fromJs FromJs
         , system.subscriptions model.draggable
         , onKeyDown <| Json.Decode.map KeyDownReceived keyEventDecoder
+        , Browser.Events.onMouseUp <| Json.Decode.succeed MouseUpReceived
         ]
 
 
@@ -122,6 +123,7 @@ type Msg
     | ItemReceivedFocus Item
     | ItemLostFocus Item
     | KeyDownReceived KeyEvent
+    | MouseUpReceived
     | InitReceived
 
 
@@ -157,6 +159,13 @@ update message model =
             ( model, Cmd.batch [ getRootItems model |> List.head |> focusMaybeItemCmd ] )
 
         FromJs int ->
+            ( model, Cmd.none )
+
+        MouseUpReceived ->
+            let
+                _ =
+                    Debug.log "MouseUpReceived" ()
+            in
             ( model, Cmd.none )
 
         DndMsgReceived msg ->
