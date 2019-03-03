@@ -112,9 +112,10 @@ system =
 
 
 type Msg
-    = FromJs Int
+    = NOP
+    | FromJs Int
+    | FocusItemResultReceived Item (Result Browser.Dom.Error ())
     | DndMsgReceived DnDList.Msg
-    | NOP
     | ItemReceivedFocus Item
     | ItemLostFocus Item
     | KeyDownReceived KeyEvent
@@ -123,7 +124,11 @@ type Msg
 
 focusMaybeItemCmd maybeItem =
     maybeItem
-        |> Maybe.map (getItemDomId >> Browser.Dom.focus >> Task.attempt (\_ -> NOP))
+        |> Maybe.map
+            (\item ->
+                Browser.Dom.focus (getItemDomId item)
+                    |> Task.attempt (FocusItemResultReceived item)
+            )
         |> Maybe.withDefault Cmd.none
 
 
@@ -132,6 +137,18 @@ update message model =
     case message of
         NOP ->
             ( model, Cmd.none )
+
+        FocusItemResultReceived item result ->
+            case result of
+                Err error ->
+                    let
+                        _ =
+                            Debug.log "FocusItemResultReceived Err" ( item, error )
+                    in
+                    ( model, Cmd.none )
+
+                Ok _ ->
+                    ( model, Cmd.none )
 
         InitReceived ->
             ( model, Cmd.batch [ getRootItems model |> List.head |> focusMaybeItemCmd ] )
