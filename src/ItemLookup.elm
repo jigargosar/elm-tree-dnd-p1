@@ -3,6 +3,7 @@ module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById,
 import Array exposing (Array)
 import Dict exposing (Dict)
 import List.Extra
+import Maybe.Extra
 
 
 type alias Item =
@@ -108,10 +109,21 @@ getPrevSibling id itemLookup =
                     maybePrevSibling : Maybe Item
                     maybePrevSibling =
                         parent.childIds
-                            |> List.Extra.find ((==) id)
+                            |> List.Extra.findIndex ((==) id)
+                            |> Maybe.andThen (\idx -> parent.childIds |> List.Extra.getAt (idx - 1))
                             |> Maybe.andThen (\cid -> getById cid itemLookup)
                 in
                 maybePrevSibling
+            )
+        |> Maybe.Extra.orElseLazy
+            (\_ ->
+                let
+                    rootItemList =
+                        getRootItems itemLookup
+                in
+                rootItemList
+                    |> List.Extra.findIndex (.id >> (==) id)
+                    |> Maybe.andThen (\idx -> rootItemList |> List.Extra.getAt (idx - 1))
             )
 
 
