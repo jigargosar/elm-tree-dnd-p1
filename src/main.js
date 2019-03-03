@@ -35,12 +35,10 @@ function createNewItem() {
   }
 }
 
-const elmMainCached = getMainCache()
-
 const app = Elm.Main.init({
   node:
     document.querySelector('#main') || document.querySelector('body > *'),
-  flags: elmMainCached,
+  flags: getMainCache(),
 })
 
 const db = new PouchDb('items')
