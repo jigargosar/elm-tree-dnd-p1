@@ -4,6 +4,8 @@ import { compose, defaultTo, mergeDeepRight } from 'ramda'
 import './main.scss'
 import { Elm } from './Main.elm'
 import PouchDb from 'pouchdb-browser'
+import faker from 'faker'
+import * as nanoid from 'nanoid'
 
 const items = [
   { id: '1', title: 'One', pid: null, childIds: [] },
@@ -11,6 +13,14 @@ const items = [
   { id: '3', title: 'Three', pid: null, childIds: [] },
   //
 ]
+
+function createNewItem() {
+  return {
+    id: 'i_' + nanoid(),
+    title: faker.lorem.words(),
+  }
+}
+
 const elmMainCached = compose(
   mergeDeepRight({ items }),
   defaultTo({}),
@@ -42,3 +52,7 @@ app.ports.bulkItemDocs.subscribe(items => {
   //   .then(res => console.log('ports.bulkItemDocs res', res))
   //   .catch(console.error)
 })
+
+if (module.hot) {
+  module.hot.accept(() => window.location.reload(true))
+}
