@@ -339,10 +339,26 @@ update message model =
 
                     "ArrowRight" ->
                         let
-                            _ =
+                            maybeItem =
+                                model.maybeFocusedItemId
+                                    |> Maybe.andThen (\id -> ItemLookup.getById id model.itemLookup)
+
+                            maybePrevSibling =
                                 model.maybeFocusedItemId
                                     |> Maybe.andThen (\id -> ItemLookup.getPrevSibling id model.itemLookup)
                                     |> Debug.log "getPrevSibling"
+
+                            maybeParent =
+                                model.maybeFocusedItemId
+                                    |> Maybe.andThen (\id -> ItemLookup.getParentById id model.itemLookup)
+
+                            _ =
+                                case maybeParent of
+                                    Just parent ->
+                                        1
+
+                                    Nothing ->
+                                        2
                         in
                         ( model, Cmd.none )
 

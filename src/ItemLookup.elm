@@ -1,4 +1,4 @@
-module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getPrevSibling, getRootItems, insertAll, toArray, toList)
+module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getParentById, getPrevSibling, getRootItems, insertAll, toArray, toList)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -13,6 +13,17 @@ type alias Item =
     , pid : Maybe String
     , childIds : List String
     , rootIdx : Int
+    }
+
+
+initialRootItem : Item
+initialRootItem =
+    { id = "i_root_item"
+    , rev = Nothing
+    , title = "Root Item Title"
+    , pid = Nothing
+    , childIds = []
+    , rootIdx = 0
     }
 
 
