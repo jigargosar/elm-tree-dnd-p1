@@ -1,4 +1,4 @@
-module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getParentOfId, getPrevSibAndParentOf, getPrevSiblingOfId, getRoot, getRootItems, insertAll, toArray, toList)
+module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getParentAndPrevPrevSibOf, getParentOfId, getPrevSiblingOfId, getRoot, getRootItems, insertAll, toArray, toList)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -119,8 +119,8 @@ getPrevSiblingOfId id itemLookup =
             )
 
 
-getPrevSibAndParentOf : String -> ItemLookup -> Maybe ( Item, Item )
-getPrevSibAndParentOf id itemLookup =
+getParentAndPrevPrevSibOf : String -> ItemLookup -> Maybe ( Item, Item )
+getParentAndPrevPrevSibOf id itemLookup =
     getParentOfId id itemLookup
         |> Debug.log "getParentOfId"
         |> Maybe.andThen
@@ -129,7 +129,7 @@ getPrevSibAndParentOf id itemLookup =
                     |> List.Extra.findIndex ((==) id)
                     |> Maybe.andThen (\idx -> parent.childIds |> List.Extra.getAt (idx - 1))
                     |> Maybe.andThen (\cid -> getById cid itemLookup)
-                    |> Maybe.map (\prevSib -> ( prevSib, parent ))
+                    |> Maybe.map (\prevSib -> ( parent, prevSib ))
             )
 
 

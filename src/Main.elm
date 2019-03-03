@@ -337,7 +337,7 @@ update message model =
                         ( model, Cmd.none )
 
                     "ArrowRight" ->
-                        updateNestFocused model
+                        onNestFocused model
 
                     _ ->
                         ( model, Cmd.none )
@@ -346,7 +346,7 @@ update message model =
                 ( model, Cmd.none )
 
 
-updateNestFocused model =
+onNestFocused model =
     let
         updateParents : String -> Item -> Item -> List Item
         updateParents id oldParent newParent =
@@ -357,7 +357,31 @@ updateNestFocused model =
     model.maybeFocusedItemId
         |> Maybe.andThen
             (\id ->
-                ItemLookup.getPrevSibAndParentOf id model.itemLookup
+                ItemLookup.getParentAndPrevPrevSibOf id model.itemLookup
+                    |> Maybe.map
+                        (\( newParent, oldParent ) ->
+                            updateParents id oldParent newParent
+                        )
+            )
+        |> Maybe.map
+            (\uItems ->
+                ( model, bulkItemDocs uItems )
+            )
+        |> Maybe.withDefault ( model, Cmd.none )
+
+
+onUnNestFocused model =
+    let
+        updateParents : String -> Item -> Item -> List Item
+        updateParents id oldParent newParent =
+            [ { oldParent | childIds = List.filter ((/=) id) oldParent.childIds }
+            , { newParent | childIds = id :: newParent.childIds }
+            ]
+    in
+    model.maybeFocusedItemId
+        |> Maybe.andThen
+            (\id ->
+                ItemLookup.getParentAndPrevPrevSibOf id model.itemLookup
                     |> Maybe.map
                         (\( newParent, oldParent ) ->
                             updateParents id oldParent newParent
