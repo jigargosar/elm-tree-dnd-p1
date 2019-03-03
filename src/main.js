@@ -14,7 +14,6 @@ import PouchDb from 'pouchdb-browser'
 import faker from 'faker'
 import nanoid from 'nanoid'
 import validate from 'aproba'
-import debounce from 'lodash.debounce'
 
 const items = times(createNewItem)(3)
 
@@ -64,14 +63,14 @@ function bulkItemDocs(items) {
   }
 }
 
-// app.ports.bulkItemDocs.subscribe(bulkItemDocs)
+app.ports.bulkItemDocs.subscribe(bulkItemDocs)
 
-const debouncedBulkItemDocs = debounce(bulkItemDocs, 1000, {
-  leading: false,
-  trailing: true,
-})
-
-app.ports.debouncedBulkItemDocs.subscribe(debouncedBulkItemDocs)
+// const debouncedBulkItemDocs = debounce(bulkItemDocs, 1000, {
+//   leading: false,
+//   trailing: true,
+// })
+//
+// app.ports.debouncedBulkItemDocs.subscribe(debouncedBulkItemDocs)
 
 if (module.hot) {
   module.hot.accept(() => window.location.reload(true))

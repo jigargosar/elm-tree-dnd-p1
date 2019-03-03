@@ -164,43 +164,60 @@ update message model =
             ( model, Cmd.none )
 
         MouseUpReceived ->
-            let
-                _ =
-                    Debug.log "MouseUpReceived" ()
-            in
-            ( model, Cmd.none )
+            case model.maybeDndItems of
+                Just items ->
+                    let
+                        _ =
+                            Debug.log "MouseUpReceived" ()
+
+                        updatedItems : List Item
+                        updatedItems =
+                            items
+                                |> List.indexedMap
+                                    (\idx item ->
+                                        if item.rootIdx == idx then
+                                            Nothing
+
+                                        else
+                                            Just { item | rootIdx = idx }
+                                    )
+                                |> List.filterMap identity
+                                |> Debug.log "newRootItems"
+                    in
+                    ( { model
+                        | maybeDndItems = Nothing
+                        , itemLookup = ItemLookup.insertAll updatedItems model.itemLookup
+                      }
+                    , Cmd.batch [ bulkItemDocs updatedItems ]
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         DndMsgReceived msg ->
             let
+                prevRootItems =
+                    case model.maybeDndItems of
+                        Just items ->
+                            items
+
+                        Nothing ->
+                            getRootItems model
+
                 ( draggable, rootItems ) =
-                    system.update msg model.draggable (getRootItems model)
+                    system.update msg model.draggable prevRootItems
 
                 maybeIdx =
                     system.draggedIndex model.draggable
                         |> Debug.log "system.draggedIndex"
-
-                newRootItems : List Item
-                newRootItems =
-                    rootItems
-                        |> List.indexedMap
-                            (\idx item ->
-                                if item.rootIdx == idx then
-                                    Nothing
-
-                                else
-                                    Just { item | rootIdx = idx }
-                            )
-                        |> List.filterMap identity
-                        |> Debug.log "newRootItems"
             in
-            ( { model | draggable = draggable, itemLookup = ItemLookup.insertAll newRootItems model.itemLookup }
+            ( { model | draggable = draggable, maybeDndItems = Just rootItems }
             , Cmd.batch
                 [ system.commands model.draggable
                 , toJsCache { items = getItems model }
                 , maybeIdx
                     |> Maybe.andThen (\idx -> getRootItems model |> List.drop idx |> List.head)
                     |> focusMaybeItemCmd
-                , debouncedBulkItemDocs newRootItems
                 ]
             )
 
