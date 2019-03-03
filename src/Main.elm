@@ -372,24 +372,15 @@ moveFocusedBy offset model =
     let
         updateIdx parent focusedItemIdx =
             let
-                newIdx =
+                offsetIdx =
                     focusedItemIdx + offset
 
-                --                rolledNewIdx =
-                --                    if newIdx >= List.length parent.childIds then
-                --                        0
-                --
-                --                    else if newIdx < 0 then
-                --                        List.length parent.childIds - 1
-                --
-                --                    else
-                --                        newIdx
                 maybeNewIdx =
-                    if newIdx >= List.length parent.childIds || newIdx < 0 then
+                    if offsetIdx >= List.length parent.childIds || offsetIdx < 0 then
                         Nothing
 
                     else
-                        Just newIdx
+                        Just offsetIdx
             in
             maybeNewIdx
                 |> Maybe.map
