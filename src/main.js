@@ -19,6 +19,8 @@ function createNewItem() {
   return {
     id: 'i_' + nanoid(),
     title: faker.lorem.words(),
+    pid: null,
+    childIds: [],
   }
 }
 
