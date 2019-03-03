@@ -6,6 +6,7 @@ import { Elm } from './Main.elm'
 import PouchDb from 'pouchdb-browser'
 import validate from 'aproba'
 import nanoid from 'nanoid'
+import faker from 'faker'
 
 // const items = times(createNewItem)(3)
 const rootItemId = 'i_root_item_id'
@@ -74,7 +75,7 @@ db.changes({ include_docs: true, live: true, since: 'now' })
   .on('error', error => console.error('item changes error', error))
 
 app.ports.newItemDoc.subscribe(() => {
-  db.put(createNewItem())
+  db.put(itemToPouchDoc(createNewItem()))
 })
 
 app.ports.toJsCache.subscribe(model => {
