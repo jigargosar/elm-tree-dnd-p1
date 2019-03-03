@@ -133,9 +133,6 @@ update message model =
 
                 maybeIdx =
                     system.draggedIndex model.draggable
-
-                _ =
-                    bulkItemDocs
             in
             ( { model | draggable = draggable, itemTree = ItemLookup.fromList items }
             , Cmd.batch
