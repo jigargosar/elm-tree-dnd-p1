@@ -341,12 +341,12 @@ update message model =
 
                             maybePrevSibling =
                                 model.maybeFocusedItemId
-                                    |> Maybe.andThen (\id -> ItemLookup.getPrevSibling id model.itemLookup)
+                                    |> Maybe.andThen (\id -> ItemLookup.getPrevSiblingOfId id model.itemLookup)
                                     |> Debug.log "getPrevSibling"
 
                             maybeParent =
                                 model.maybeFocusedItemId
-                                    |> Maybe.andThen (\id -> ItemLookup.getParentById id model.itemLookup)
+                                    |> Maybe.andThen (\id -> ItemLookup.getParentOfId id model.itemLookup)
 
                             _ =
                                 case maybeParent of

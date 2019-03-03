@@ -1,4 +1,4 @@
-module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getParentById, getPrevSibling, getRoot, getRootItems, insertAll, toArray, toList)
+module ItemLookup exposing (Item, ItemLookup, fromList, getAncestorIds, getById, getChildrenOfId, getParentOfId, getPrevSiblingOfId, getRoot, getRootItems, insertAll, toArray, toList)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -45,8 +45,8 @@ getById id itemLookup =
     Dict.get id itemLookup
 
 
-getParentById : String -> ItemLookup -> Maybe Item
-getParentById id itemLookup =
+getParentOfId : String -> ItemLookup -> Maybe Item
+getParentOfId id itemLookup =
     getById id itemLookup |> Maybe.andThen (\item -> getById item.id itemLookup)
 
 
@@ -66,7 +66,7 @@ getAncestorIdsHelp ancestorIds id itemLookup =
     let
         maybeParent : Maybe Item
         maybeParent =
-            getParentById id itemLookup
+            getParentOfId id itemLookup
 
         newAncestorIds : List String
         newAncestorIds =
@@ -102,13 +102,13 @@ getChildrenOfId parentId itemLookup =
 
 getSiblingsOfId : String -> ItemLookup -> Maybe (List Item)
 getSiblingsOfId id itemLookup =
-    getParentById id itemLookup
+    getParentOfId id itemLookup
         |> Maybe.andThen (\parent -> getChildrenOfId parent.id itemLookup)
 
 
-getPrevSibling : String -> ItemLookup -> Maybe Item
-getPrevSibling id itemLookup =
-    getParentById id itemLookup
+getPrevSiblingOfId : String -> ItemLookup -> Maybe Item
+getPrevSiblingOfId id itemLookup =
+    getParentOfId id itemLookup
         |> Maybe.andThen
             (\parent ->
                 parent.childIds
