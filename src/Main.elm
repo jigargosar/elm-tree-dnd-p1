@@ -42,6 +42,7 @@ type alias Model =
     { itemLookup : ItemLookup
     , draggable : DnDList.Draggable
     , maybeFocusedItemId : Maybe String
+    , maybeDndItems : Maybe (List Item)
     }
 
 
@@ -55,6 +56,7 @@ init flags =
         { itemLookup = ItemLookup.fromList flags.items
         , draggable = system.draggable
         , maybeFocusedItemId = Nothing
+        , maybeDndItems = Nothing
         }
 
 
