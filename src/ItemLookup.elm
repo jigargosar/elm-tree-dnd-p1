@@ -111,15 +111,10 @@ getPrevSibling id itemLookup =
     getParentById id itemLookup
         |> Maybe.andThen
             (\parent ->
-                let
-                    maybePrevSibling : Maybe Item
-                    maybePrevSibling =
-                        parent.childIds
-                            |> List.Extra.findIndex ((==) id)
-                            |> Maybe.andThen (\idx -> parent.childIds |> List.Extra.getAt (idx - 1))
-                            |> Maybe.andThen (\cid -> getById cid itemLookup)
-                in
-                maybePrevSibling
+                parent.childIds
+                    |> List.Extra.findIndex ((==) id)
+                    |> Maybe.andThen (\idx -> parent.childIds |> List.Extra.getAt (idx - 1))
+                    |> Maybe.andThen (\cid -> getById cid itemLookup)
             )
 
 
