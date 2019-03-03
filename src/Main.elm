@@ -36,7 +36,7 @@ main =
 
 
 type alias Model =
-    { itemTree : ItemLookup
+    { itemLookup : ItemLookup
     , draggable : DnDList.Draggable
     , maybeFocusedItemId : Maybe String
     }
@@ -48,16 +48,19 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { itemTree = ItemLookup.fromList flags.items
-      , draggable = system.draggable
-      , maybeFocusedItemId = Nothing
-      }
-    , Cmd.none
-    )
+    update InitReceived
+        { itemLookup = ItemLookup.fromList flags.items
+        , draggable = system.draggable
+        , maybeFocusedItemId = Nothing
+        }
 
 
 getItems model =
-    model.itemTree |> ItemLookup.toList
+    model.itemLookup |> ItemLookup.toList
+
+
+getRootItems model =
+    model.itemLookup |> ItemLookup.getRootItems
 
 
 
@@ -131,7 +134,7 @@ update message model =
             ( model, Cmd.none )
 
         InitReceived ->
-            ( model, Cmd.none )
+            ( model, Cmd.batch [ getRootItems model |> List.head |> focusMaybeItemCmd ] )
 
         FromJs int ->
             ( model, Cmd.none )
@@ -144,7 +147,7 @@ update message model =
                 maybeIdx =
                     system.draggedIndex model.draggable
             in
-            ( { model | draggable = draggable, itemTree = ItemLookup.fromList items }
+            ( { model | draggable = draggable, itemLookup = ItemLookup.fromList items }
             , Cmd.batch
                 [ system.commands model.draggable
                 , toJsCache { items = getItems model }
@@ -179,11 +182,11 @@ update message model =
 
                 updateFocusedItemTreeCursor fn =
                     model.maybeFocusedItemId
-                        |> Maybe.andThen (\id -> ItemTreeCursor.forId id model.itemTree)
+                        |> Maybe.andThen (\id -> ItemTreeCursor.forId id model.itemLookup)
                         |> Maybe.andThen fn
                         |> Maybe.map
                             (\cursor ->
-                                ( { model | itemTree = ItemTreeCursor.getItemLookup cursor }
+                                ( { model | itemLookup = ItemTreeCursor.getItemLookup cursor }
                                 , Cmd.batch
                                     [ toJsCache { items = getItems model }
                                     ]
