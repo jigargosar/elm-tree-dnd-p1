@@ -467,9 +467,9 @@ onUnnestFocused model =
 
 view : Model -> Html Msg
 view model =
-    co [ sans_serif, measure ]
+    co [ sans_serif, measure, pt3 ]
         [ div []
-            [ button [ onClick AddItemClicked ] [ t "add new" ]
+            [ button [ classes [ br1, ba, b__black_20, ttu, mh1, f6 ], onClick AddItemClicked ] [ t "add new" ]
             ]
         , viewTree model
         , viewDndItemTree model
